@@ -47,4 +47,50 @@ public class LinkedList {
     public LinkedListNode<Integer> getHead() {
         return  this.head;
     }
+
+    public LinkedListNode<Integer> deleteNode(int index){
+
+        if (this.head == null){
+            return null;
+        }
+
+        if (index == 0){
+
+            if (this.head.next == null) {
+                this.head = null;
+                this.tail = null;
+                this.size--;
+                return null;
+            }
+
+            this.head = this.head.next;
+            this.size--;
+            return this.head;
+        }
+
+        return findNodeAndDelete(this.getHead(),index,0);
+    }
+
+    private LinkedListNode<Integer> findNodeAndDelete(LinkedListNode<Integer> element, int index, int starting){
+
+        if (element == null){
+            return null;
+        } else {
+            if (starting == index -1){
+                LinkedListNode<Integer> temp = element.next;
+                if (temp.next == null){
+                    this.tail = element;
+                    this.tail.next = null;
+                    this.size--;
+                    return  this.tail;
+                }
+                element.next = temp.next;
+                this.size--;
+                return element;
+
+            }
+        }
+
+        return findNodeAndDelete(element.next, index, starting + 1);
+    }
 }
