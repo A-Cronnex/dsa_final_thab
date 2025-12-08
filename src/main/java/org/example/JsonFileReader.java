@@ -14,10 +14,10 @@ public class JsonFileReader {
     public static void main(String[] args) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(new File("src/sample.json"));
-        JsonNode node= jsonNode.get("nodes");
+        JsonNode node = jsonNode.get("nodes");
         TypeReference<List<Node>> typeRef = new TypeReference<List<Node>>() {};
 
-        List<Node> nodes= objectMapper.readValue(node.traverse(), typeRef);
+        List<Node> nodes = objectMapper.readValue(node.traverse(), typeRef);
 
         System.out.println(nodes.get(0).getId());
         System.out.println(nodes);

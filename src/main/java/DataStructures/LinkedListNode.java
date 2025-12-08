@@ -1,14 +1,14 @@
 package DataStructures;
 
-public class LinkedListNode<Integer> {
-    public Integer element;
-    public LinkedListNode<Integer> next;
+public class LinkedListNode<T> {
+    public T element;
+    public LinkedListNode<T> next;
 
-    public LinkedListNode(Integer e){
+    public LinkedListNode(T e){
         this.element = e;
     }
 
-    public Integer getElementNextNode(){
+    public T getElementNextNode(){
         return this.next.element;
     }
 

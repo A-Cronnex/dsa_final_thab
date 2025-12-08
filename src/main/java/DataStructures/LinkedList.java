@@ -1,54 +1,62 @@
 package DataStructures;
 
-import java.lang.reflect.Type;
+public class LinkedList<T> {
+    private LinkedListNode<T> head;
+    private LinkedListNode<T> tail = null;
+    private int size = 0;
 
-public class LinkedList {
-    LinkedListNode<Integer> head;
-    int size = 0;
-    LinkedListNode<Integer> tail = null;
+
     public LinkedList(){
     }
 
-    public void appendNode(int value){
+
+    public void appendNode(T value){
         if (size == 0){
-            this.head = new LinkedListNode<Integer>(value);
+            this.head = new LinkedListNode<T>(value);
             this.tail = this.head;
             this.tail.next = null;
             size++;
             return;
         }
 
-        LinkedListNode<Integer> node = new LinkedListNode<Integer>(value);
+        this.tail.next = new LinkedListNode<T>(value);
+        this.tail = this.tail.next;
 
-        LinkedListNode<Integer> temp = this.tail;
-
-        temp.next = node;
-
-        this.tail = node;
-
-        this.tail.next = null;
+        //  doesn't java initialize field variables as null already?
+        //  this.tail.next = null;
 
         size++;
     }
 
+    public boolean findValue(T value){
+        return findValue(head, value);
+    }
 
+    public boolean findValue(LinkedListNode<T> node, T value){
 
-    public boolean findValueRecursive(LinkedListNode<Integer> element, int value){
+        while (node != null){
+            if(node.element.equals(value)) return true;
+            node = node.next;
+        }
 
-        if(element.element == value){
+        return false;
+
+        /* why use recursive function, when you can just do a loop?
+
+        if(node.element.equals(value)){
             return true;
-        } else if (element.next == null){
+        } else if (node.next == null){
             return false;
         }
 
-        return (findValueRecursive(element.next, value));
+        return (findValueRecursive(node.next, value));*/
     }
 
-    public LinkedListNode<Integer> getHead() {
-        return  this.head;
+    public LinkedListNode<T> getHead() {
+        return this.head;
     }
 
-    public LinkedListNode<Integer> deleteNode(int index){
+    public LinkedListNode<T> deleteNode(int index){
 
         if (this.head == null){
             return null;
@@ -71,26 +79,26 @@ public class LinkedList {
         return findNodeAndDelete(this.getHead(),index,0);
     }
 
-    private LinkedListNode<Integer> findNodeAndDelete(LinkedListNode<Integer> element, int index, int starting){
+    private LinkedListNode<T> findNodeAndDelete(LinkedListNode<T> node, int index, int starting){
 
-        if (element == null){
+        if (node == null){
             return null;
         } else {
-            if (starting == index -1){
-                LinkedListNode<Integer> temp = element.next;
+            if (starting == index - 1){
+                LinkedListNode<T> temp = node.next;
                 if (temp.next == null){
-                    this.tail = element;
+                    this.tail = node;
                     this.tail.next = null;
                     this.size--;
-                    return  this.tail;
+                    return this.tail;
                 }
-                element.next = temp.next;
+                node.next = temp.next;
                 this.size--;
-                return element;
+                return node;
 
             }
         }
 
-        return findNodeAndDelete(element.next, index, starting + 1);
+        return findNodeAndDelete(node.next, index, starting + 1);
     }
 }
