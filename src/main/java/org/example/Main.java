@@ -1,28 +1,40 @@
 package org.example;
 
+import DataStructures.Dictionary;
 import DataStructures.LinkedList;
+import DataStructures.LinkedListNode;
 import DataStructures.Pair;
 
 import java.lang.reflect.Type;
 
 public class Main {
     public static void main(String[] args) {
-        Pair<String, Integer> one = new Pair<>("Papa", 5);
-        Pair<String, Integer> two = new Pair<>("Papa", 5);
+        Dictionary<String, Integer> test = new Dictionary<>();
 
-        System.out.println(one.hashCode() == two.hashCode());
+        test.insert("ABBA", 4);
+        test.insert("Me", 1);
+        test.insert("HUB", 55);
 
-        LinkedList LL = new LinkedList<Node>();
+        LinkedList<String> keys = test.keys();
+        LinkedList<Integer> values = test.values();
 
-        LL.appendNode(1);
-        LL.appendNode(2);
-        LL.appendNode(3);
-        LL.appendNode(4);
+        LinkedListNode<String> node = keys.getHead();
+        while (node != null){
+            System.out.println(node.value);
+            node = node.next;
+        }
+        System.out.println();
+        LinkedListNode<Integer> node2 = values.getHead();
+        while (node2 != null){
+            System.out.println(node2.value);
+            node2 = node2.next;
+        }
+        System.out.println();
 
-        System.out.println(LL.findValue(LL.getHead(),-2));
-
-
-
+        System.out.println(test.is_empty());
+        System.out.println(test.get("HUB"));
+        System.out.println(test.delete("ABBA"));
+        System.out.println(test.get("ABBA"));
     }
 
 

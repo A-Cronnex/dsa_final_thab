@@ -11,7 +11,7 @@ public class Dictionary <T, V> {
 
 
     public Dictionary(){
-        this.hashmap = new LinkedList[];
+        this.hashmap = new LinkedList[DICT_SIZE];
         this.size = 0;
     }
 
@@ -46,7 +46,7 @@ public class Dictionary <T, V> {
     }
     public int size() {return size;}
 
-    public V search(T key){
+    public V get(T key){
         int index = hash(key);
 
         Pair<T, V> foundPair = searchBucket(index, key);
@@ -66,14 +66,43 @@ public class Dictionary <T, V> {
 
     public boolean delete(T key){
         int index = hash(key);
-        // better iteration again
+        // better deletion, since this takes double iteration
         LinkedList<Pair<T, V>> bucket = hashmap[index];
         if (bucket != null) {
-            bucket.deleteNode(key);
-            return true;
-            }
+            LinkedListNode<Pair<T, V>> deletedNode = bucket.deleteNode(searchBucket(index, key));
+            return deletedNode != null;
         }
         return false;
+    }
+
+    public LinkedList<T> keys(){
+        LinkedList<T> keyList = new LinkedList<>();
+        for (int i = 0; i < DICT_SIZE; ++i){
+            if (hashmap[i] != null){
+                LinkedListNode<Pair<T, V>> currentNode = hashmap[i].getHead();
+                while (currentNode != null){
+                    keyList.appendNode(currentNode.value.first);
+                    currentNode = currentNode.next;
+                }
+            }
+        }
+        return keyList;
+    }
+
+    public LinkedList<V> values(){
+        LinkedList<V> valueList = new LinkedList<>();
+        for (int i = 0; i < DICT_SIZE; ++i){
+            if (hashmap[i] != null){
+                LinkedListNode<Pair<T, V>> currentNode = hashmap[i].getHead();
+                while (currentNode != null){
+                    valueList.appendNode(currentNode.value.second);
+                    currentNode = currentNode.next;
+                }
+            }
+        }
+        return valueList;
+
+
     }
 
 }
