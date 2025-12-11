@@ -1,15 +1,15 @@
 package DataStructures;
 
 public class LinkedListNode<T> {
-    public T element;
+    public T value;
     public LinkedListNode<T> next;
 
     public LinkedListNode(T e){
-        this.element = e;
+        this.value = e;
     }
 
     public T getElementNextNode(){
-        return this.next.element;
+        return this.next.value;
     }
 
 }

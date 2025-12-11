@@ -9,7 +9,6 @@ public class LinkedList<T> {
     public LinkedList(){
     }
 
-
     public void appendNode(T value){
         if (size == 0){
             this.head = new LinkedListNode<T>(value);
@@ -35,7 +34,7 @@ public class LinkedList<T> {
     public boolean findValue(LinkedListNode<T> node, T value){
 
         while (node != null){
-            if(node.element.equals(value)) return true;
+            if(node.value.equals(value)) return true;
             node = node.next;
         }
 
@@ -56,7 +55,7 @@ public class LinkedList<T> {
         return this.head;
     }
 
-    public LinkedListNode<T> deleteNode(int index){
+    public LinkedListNode<T> indexDeleteNode(int index){
 
         if (this.head == null){
             return null;
@@ -77,6 +76,35 @@ public class LinkedList<T> {
         }
 
         return findNodeAndDelete(this.getHead(),index,0);
+    }
+
+    //deletion by value
+    // needs attention, is a mess
+    public LinkedListNode<T> deleteNode(T value){
+        LinkedListNode<T> popNode = null;
+        if (this.head == null){
+            return null;
+        }
+
+        LinkedListNode checkedNode = this.head;
+        if (head.value == value){
+            popNode = head;
+            this.head = head.next;
+            size--;
+        } else {
+            while (checkedNode != null){
+                if (checkedNode.next.value == value){
+                    popNode = checkedNode.next
+                    checkedNode.next = popNode.next;
+                    size--;
+                    break;
+                }
+            }
+        }
+        if (size == 0){
+            this.head = null;
+            this.tail = null;
+        }
     }
 
     private LinkedListNode<T> findNodeAndDelete(LinkedListNode<T> node, int index, int starting){
