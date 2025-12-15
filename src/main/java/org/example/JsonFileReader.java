@@ -9,10 +9,19 @@ import java.io.IOException;
 import java.util.List;
 
 public class JsonFileReader {
-    private List<String> NodeNames;
-    private List<String> Connections;
     public static void main(String[] args) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
+        Graph graph = objectMapper.readValue(
+                new File("src/sample.json"),
+                Graph.class
+        );
+
+        List<Node> nodes = graph.getNodes();
+        List<JSONEdge> edges = graph.getEdges();
+
+        /*
+        ObjectMapper objectMapper = new ObjectMapper();
+
         JsonNode jsonNode = objectMapper.readTree(new File("src/sample.json"));
         JsonNode node = jsonNode.get("nodes");
         TypeReference<List<Node>> typeRef = new TypeReference<List<Node>>() {};
@@ -21,6 +30,6 @@ public class JsonFileReader {
 
         System.out.println(nodes.get(0).getId());
         System.out.println(nodes);
-
+        */
     }
 }

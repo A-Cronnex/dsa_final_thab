@@ -9,6 +9,15 @@ public class LinkedList<T> {
     public LinkedList() {
     }
 
+    // does not actually return the dummy head, but the first actual element
+    public LinkedListNode<T> getHead(){
+        return this.head.next;
+    }
+
+    public int getSize(){
+        return size;
+    }
+
     public void appendNode(T value) {
         LinkedListNode<T> toAdd = new LinkedListNode<>(value);
 
@@ -31,9 +40,12 @@ public class LinkedList<T> {
         return false;
     }
 
-    // does not actually return the dummy head, but the first actual element
-    public LinkedListNode<T> getHead(){
-        return this.head.next;
+    public T get(int atIndex){
+        if (atIndex >= size) return null;
+
+        LinkedListNode<T> desiredNode = this.head;
+        for (int i = 0; i <= atIndex; ++i) desiredNode = desiredNode.next;
+        return desiredNode.value;
     }
 
     public LinkedListNode<T> removeChild(LinkedListNode<T> deletionPoint) {
@@ -69,4 +81,18 @@ public class LinkedList<T> {
 
         return false;
     }
+
+    // deletion by index
+    public boolean deleteAt(int atIndex){
+        if (atIndex >= size) return false;
+
+        LinkedListNode<T> desiredNode = this.head;
+        for (int i = 0; i < atIndex; ++i) desiredNode = desiredNode.next;
+        removeChild(desiredNode);
+        return true;
+    }
+
+
+    // iteration would be nice
+
 }
