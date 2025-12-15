@@ -1,9 +1,9 @@
-package org.example;
+package org.example.JSON;
 
 public class JSONEdge {
     private String from;
     private String to;
-    private int energyCost;
+    private int energy;
     private int capacity;
     private int distance;
     private boolean bidirectional;
@@ -11,24 +11,24 @@ public class JSONEdge {
 
     public JSONEdge(){}
 
-    public JSONEdge(String from, String to, int capacity, int energyCost){
+    public JSONEdge(String from, String to, int capacity, int energy){
         this.from = from;
         this.to = to;
         this.capacity = capacity;
-        this.energyCost = energyCost;
+        this.energy = energy;
     }
 
-    public JSONEdge(String from, String to, int distance, int capacity, int energyCost, boolean restricted, boolean bidirectional) {
+    public JSONEdge(String from, String to, int distance, int capacity, int energy, boolean restricted, boolean bidirectional) {
         this.from = from;
         this.to = to;
         this.distance = distance;
         this.capacity = capacity;
-        this.energyCost = energyCost;
+        this.energy = energy;
         this.restricted = restricted;
         this.bidirectional = bidirectional;
     }
 
-    public void setEnergyCost(int energyCost) {this.energyCost = energyCost;}
+    public void setEnergy(int energy) {this.energy = energy;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDistance(int distance) {this.distance = distance;}
     public void setBidirectional(boolean bidirectional) {this.bidirectional = bidirectional;}
@@ -41,6 +41,19 @@ public class JSONEdge {
     public boolean isBidirectional() {return bidirectional;}
     public int getDistance() {return distance;}
     public int getCapacity() {return capacity;}
-    public int getEnergyCost() {return energyCost;}
+    public int getEnergy() {return energy;}
     public String getTo() {return to;}
+
+    @Override
+    public String toString() {
+        return "JSONEdge{" +
+                "from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", energy=" + energy +
+                ", capacity=" + capacity +
+                ", distance=" + distance +
+                ", bidirectional=" + bidirectional +
+                ", restricted=" + restricted +
+                '}';
+    }
 }

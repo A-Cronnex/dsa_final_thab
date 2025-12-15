@@ -28,4 +28,15 @@ public class Node {
     public String getType() {return type;}
     public int getX() {return x;}
     public int getY() {return y;}
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

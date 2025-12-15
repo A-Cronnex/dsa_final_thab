@@ -95,4 +95,12 @@ public class LinkedList<T> {
 
     // iteration would be nice
 
+    public void printList(){
+        LinkedListNode<T> currentNode = this.getHead();
+        while (currentNode != null){
+            System.out.print(currentNode.value.toString() + "  ");
+            currentNode = currentNode.next;
+        }
+        System.out.println();
+    }
 }
