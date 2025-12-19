@@ -3,17 +3,17 @@ package DataStructures.GraphElements;
 import DataStructures.MyHashMap;
 
 public class GraphNode {
-    public String id;
-    public String type;
-    public String name;
-    public Integer x;
-    public Integer y;
+    private String id;
+    private String type;
+    private String name;
+    private Integer x;
+    private Integer y;
     public GraphNode next;
-    public Integer arrayPosition;
+    //public Integer arrayPosition;
 
     public MyHashMap weights;
 
-    public GraphNode(String id, String type, String name, Integer x, Integer y, Integer arrayPosition){
+    public GraphNode(String id, String type, String name, Integer x, Integer y){
         this.setId(id);
         this.setType(type);
         this.setName(name);
@@ -26,13 +26,12 @@ public class GraphNode {
     public void setName(String name) {this.name = name;}
     public void setX(Integer x){this.x = x;}
     public void setY(Integer y){this.y = y;}
-    public void setArrayPosition(Integer arrayPosition){this.arrayPosition = arrayPosition;}
 
     public String getId() {return this.id;}
     public String getType() {return this.type;}
     public Integer getX() {return  this.x;}
     public Integer getY() {return  this.y;}
-
+    public String getName() {return  this.name;}
     public String getNextNodeValue(){
         return this.next.id;
     }

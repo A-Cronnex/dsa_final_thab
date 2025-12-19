@@ -1,25 +1,27 @@
 package DataStructures.GraphElements;
 
-public class LinkedList {
-    protected GraphNode head;
+public class LinkedList<T> {
+
+    //Changed to generics, for better usability
+    protected T head;
     protected int size = 0;
-    protected GraphNode tail = null;
+    protected T tail = null;
 
     public LinkedList(){
     }
 
-    public void appendNode(String id, String type, String name, Integer x, Integer y, Integer arrayPosition){
+
+    public void appendNode(T node){
         if (size == 0){
-            this.head = new GraphNode(id,type, name, x, y, arrayPosition);
+            this.head = node;
             this.tail = this.head;
             this.tail.next = null;
             size++;
             return;
         }
 
-        GraphNode node = new GraphNode(id,type, name, x, y, arrayPosition);
 
-        GraphNode temp = this.tail;
+        T temp = this.tail;
 
         temp.next = node;
 
@@ -32,7 +34,7 @@ public class LinkedList {
 
         public GraphNode findValueRecursive(GraphNode element, String key){
 
-            if(element.id.equals(key)){
+            if(element.getId().equals(key)){
                 return element;
             } else if (element.next == null){
                 return null;
@@ -41,11 +43,11 @@ public class LinkedList {
             return (findValueRecursive(element.next, key));
         }
 
-        public GraphNode getHead() {
-            return  this.head;
+        public T getHead() {
+            return this.head;
         }
 
-        public GraphNode deleteNode(String key){
+        public T deleteNode(String key){
 
             if (this.head == null){
                 return null;
@@ -68,7 +70,7 @@ public class LinkedList {
             return findNodeAndDelete(this.getHead(),key);
         }
 
-    private GraphNode findNodeAndDelete(GraphNode node, String key) {
+    private T findNodeAndDelete(T node, String key) {
         if (node == null){
             return null;
         } else {
