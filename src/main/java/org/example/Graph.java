@@ -4,7 +4,7 @@ import DataStructures.Dictionary;
 import DataStructures.LinkedList;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
-
+import org.example.Edge;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
