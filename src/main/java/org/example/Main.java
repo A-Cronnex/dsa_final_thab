@@ -6,6 +6,7 @@ import DataStructures.LinkedListNode;
 import DataStructures.Pair;
 import org.example.JSON.JsonFileReader;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -105,6 +106,20 @@ public class Main {
                     System.out.println("Updated edges from " + fromId + ":");
                     NovaSchilda.adjacencyList.get(fromIndex).printList();
                     break;
+                // F1 --> reachibility
+                case 4:
+                    System.out.println("Check Reachability");
+                    System.out.print("Enter HUB node ID: ");
+                    String hubId = myObj.nextLine();
+
+                    boolean reachable = NovaSchilda.allDeliveriesReachable(hubId);
+
+                    if (reachable) {
+                        System.out.println("All delivery points are reachable from " + hubId);
+                    } else {
+                        System.out.println("Some delivery points are NOT reachable from " + hubId);
+                    }
+                    break;
 
                 case 5:
                     System.out.println("=== Determine Efficient Flight Route ===");
@@ -114,6 +129,26 @@ public class Main {
                 default:
                     System.out.println("Feature not implemented yet.");
                     break;
+
+                case 6:
+                    System.out.println("Calculate Delivery Capacity");
+
+                    System.out.print("Enter HUB ID: ");
+                    String hubIdCap = myObj.nextLine();
+
+                    System.out.print("Enter number of delivery points in the urban area: ");
+                    int numPoints = Integer.parseInt(myObj.nextLine());
+
+                    ArrayList<String> area = new ArrayList<>();
+                    for (int i = 0; i < numPoints; i++) {
+                        System.out.print("Enter delivery point ID: ");
+                        area.add(myObj.nextLine());
+                    }
+
+                    int capacity = NovaSchilda.calculateDeliveryCapacity(hubIdCap, area);
+                    System.out.println("Max simultaneous deliveries: " + capacity);
+                    break;
+
             }
 
         }
@@ -121,3 +156,11 @@ public class Main {
         System.out.println("Program terminated.");
     }
 }
+
+
+
+
+
+
+
+///Users/ifrahsanaullah/SEMESTER 3/ALGORITHM & DS/dsa_final_sdi2024/src/main/resources/sample.json

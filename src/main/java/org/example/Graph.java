@@ -4,9 +4,7 @@ import DataStructures.Dictionary;
 import DataStructures.LinkedList;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
-import org.example.Edge;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,5 +71,79 @@ public class Graph {
             e.setRestricted(false);
         }
     }
+    // F1: Check if all delivery nodes are reachable from a given hub
+    public boolean allDeliveriesReachable(String hubId) {
+
+        // Convert HUB ID to index
+        Integer startIndex = idToIndex.get(hubId);
+        if (startIndex == null) {
+            System.out.println("Hub ID does not exist.");
+            return false;
+        }
+
+        // BFS setup
+        boolean[] visited = new boolean[adjacencyList.size()];
+        java.util.Queue<Integer> queue = new java.util.LinkedList<>();
+
+        queue.add(startIndex);
+        visited[startIndex] = true;
+
+        // BFS traversal (skip restricted edges)
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+
+            for (Edge edge : adjacencyList.get(current)) {
+
+                if (edge.isRestricted()) continue; // skip blocked edges
+
+                int next = edge.getTo();
+
+                if (!visited[next]) {
+                    visited[next] = true;
+                    queue.add(next);
+                }
+            }
+        }
+
+        // Check if all delivery nodes were reached
+        for (int i = 0; i < indexToNode.size(); i++) {
+            Node n = indexToNode.get(i);
+
+            if (n.getType().equals("delivery") && !visited[i]) {
+                System.out.println("Unreachable delivery node: " + n.getId());
+                return false;
+            }
+        }
+
+        return true;
+    }
+    //F3: Calculate Delivery Capacity
+    public int calculateDeliveryCapacity(String hubId, ArrayList<String> urbanArea) {
+
+        Integer hubIndex = idToIndex.get(hubId);
+        if (hubIndex == null) {
+            System.out.println("Hub does not exist.");
+            return 0;
+        }
+
+        int totalCapacity = 0;
+
+        // For every edge starting at the hub
+        for (Edge e : adjacencyList.get(hubIndex)) {
+
+            // Skip no-fly zone edges
+            if (e.isRestricted()) continue;
+
+            // If the edge leads to a delivery point in the urban area
+            String targetId = indexToNode.get(e.getTo()).getId();
+
+            if (urbanArea.contains(targetId)) {
+                totalCapacity += e.getCapacity();
+            }
+        }
+
+        return totalCapacity;
+    }
+
 
 }
