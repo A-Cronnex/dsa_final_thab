@@ -1,6 +1,6 @@
 package DataStructures;
 
-public class LinkedList<T> {
+public class LinkedList<T> implements Iterable<T> {
     private LinkedListNode<T> head = new LinkedListNode<T>(null);
     private LinkedListNode<T> tail = head;
     private int size = 0;
@@ -102,5 +102,24 @@ public class LinkedList<T> {
             currentNode = currentNode.next;
         }
         System.out.println();
+    }
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return new java.util.Iterator<T>() {
+
+            LinkedListNode<T> current = head.next;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public T next() {
+                T value = current.value;
+                current = current.next;
+                return value;
+            }
+        };
     }
 }

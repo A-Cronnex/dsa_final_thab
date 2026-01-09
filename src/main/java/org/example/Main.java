@@ -6,87 +6,118 @@ import DataStructures.LinkedListNode;
 import DataStructures.Pair;
 import org.example.JSON.JsonFileReader;
 
-import java.lang.reflect.Type;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // subject to change!!!!
-        // by aaron: I re-added the code of the menu in the main program because the Prof. Barbara said that in order to access each of the options...
-        //we had to make a menu
 
         Scanner myObj = new Scanner(System.in);
         boolean hasFilledJsonFile = false;
         boolean isLoopActive = true;
-        int option = -1;
+        Graph NovaSchilda = null;
         JsonFileReader JSONParser = new JsonFileReader();
-        while (isLoopActive){
 
-            System.out.println("Welcome to the drone network program! Please select an option");
-            System.out.println("1. Input drone network from JSON file \n 2. Define up a fly-no-zone \n " +
-                            " 3. Extend and modify a drone network. \n 4. Check reachability \n" +
-                            " 5. Determine efficient flight routes \n 6. Calculate delivery capacity \n 7. Assess and improve network resilience " +
-                            " 8. Optimize Charge Station Placement for Large-Scale Coverage \n 9. Communication Infraestructure for Drones \n 10. Exit");
-            option = myObj.nextInt();
+        while (isLoopActive) {
 
-                    if (option == 10){
-                        isLoopActive = false;
+            System.out.println("\nWelcome to the drone network program! Please select an option");
+            System.out.println("1. Input drone network from JSON file");
+            System.out.println("2. Define a no-fly zone");
+            System.out.println("3. Extend and modify a drone network");
+            System.out.println("4. Check reachability");
+            System.out.println("5. Determine efficient flight routes");
+            System.out.println("6. Calculate delivery capacity");
+            System.out.println("7. Assess and improve network resilience");
+            System.out.println("8. Optimize charge station placement");
+            System.out.println("9. Drone communication infrastructure");
+            System.out.println("10. Exit");
+            System.out.print("Choose option: ");
+
+            //  FIX: Read menu input safely without crashing
+            String input = myObj.nextLine();
+            int option;
+            try {
+                option = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number between 1 and 10.\n");
+                continue;
+            }
+
+            // EXIT
+            if (option == 10) {
+                isLoopActive = false;
+                break;
+            }
+
+            // OPTION 1: LOAD JSON FILE
+            if (option == 1) {
+                System.out.println("Please ingress the name of the file below:");
+                String filename = myObj.nextLine(); // FIXED
+
+                try {
+                    NovaSchilda = new Graph(JSONParser.readFromFile(filename));
+
+                    // Print graph summary
+                    System.out.println(NovaSchilda.indexToNode);
+                    NovaSchilda.idToIndex.keys().printList();
+                    NovaSchilda.idToIndex.values().printList();
+                    for (LinkedList<Edge> row : NovaSchilda.adjacencyList) {
+                        row.printList();
                     }
 
-                    if (option == 1){
-                        //Code for adding the JSON fill
-                        System.out.println("Please ingress the name of the file below");
-                        try{
-                            String filename = myObj.next();
-                            Graph NovaSchilda = new Graph(JSONParser.readFromFile(filename));
-                            System.out.println(NovaSchilda.indexToNode);
-                            NovaSchilda.idToIndex.keys().printList();
-                            NovaSchilda.idToIndex.values().printList();
-                            for (LinkedList<Edge> row : NovaSchilda.adjacencyList){
-                                row.printList();
-                            }
-                            hasFilledJsonFile = true;
-
-                        }catch (Exception e){
-                            System.out.println("File not found!");
-                        }
-
-                    } else if ((option > 1 && option <= 10) && !hasFilledJsonFile ) {
-
-                        System.out.println("You haven't ingressed any JSON file yet!");
-                    } else if ( hasFilledJsonFile && (option > 1 && option <= 9)){
-                        switch (option){
-                            case 2:
-                                //
-                                break;
-                            case 3:
-                                //
-                                break;
-                            case 4:
-                                //
-                                break;
-                            case 5:
-                                //
-                                break;
-                            case 6:
-                                //
-                                break;
-                            case 7:
-                                //
-                                break;
-                            case 8:
-                                //
-                                break;
-                            case 9:
-                                //
-                                break;
-
-                        }
-                    } else {
-                        System.out.println("The command provided is not in the option list.");
-                    }
-
-
+                    hasFilledJsonFile = true;
+                } catch (Exception e) {
+                    System.out.println("File not found! Make sure the file is in project root or /src/main/resources/");
                 }
+
+                continue;
+            }
+
+            // If user hasn't loaded JSON yet but tries other options
+            if (!hasFilledJsonFile) {
+                System.out.println("You haven't loaded any JSON network yet!");
+                continue;
+            }
+
+            // OTHER OPTIONS AFTER JSON LOADED
+            switch (option) {
+
+                case 2:
+                    System.out.println("Define a No-Fly Zone");
+
+                    System.out.print("Enter FROM node ID: ");
+                    String fromId = myObj.nextLine();
+
+                    System.out.print("Enter TO node ID: ");
+                    String toId = myObj.nextLine();
+
+                    Integer fromIndex = NovaSchilda.idToIndex.get(fromId);
+                    Integer toIndex = NovaSchilda.idToIndex.get(toId);
+
+                    if (fromIndex == null || toIndex == null) {
+                        System.out.println("Invalid node ID(s). Please check your JSON file.");
+                        break;
+                    }
+
+                    NovaSchilda.setNoFlyZone(fromIndex, toIndex);
+                    System.out.println("Corridor from " + fromId + " to " + toId + " is now restricted (No-Fly Zone).");
+
+                    System.out.println("Updated edges from " + fromId + ":");
+                    NovaSchilda.adjacencyList.get(fromIndex).printList();
+                    break;
+
+                case 5:
+                    System.out.println("=== Determine Efficient Flight Route ===");
+                    System.out.println("This feature is not implemented yet.");
+                    break;
+
+                default:
+                    System.out.println("Feature not implemented yet.");
+                    break;
+            }
+
+        }
+
+        System.out.println("Program terminated.");
     }
 }
