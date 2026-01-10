@@ -94,7 +94,7 @@ public class Graph {
 
         // BFS traversal (skip restricted edges)
         while (!queue.isEmpty()) {
-            int current = queue.poll();
+            int current = queue.poll(); //poll means areads a value and dlt the elements
 
             for (Edge edge : adjacencyList.get(current)) {
 
@@ -109,17 +109,22 @@ public class Graph {
             }
         }
 
+        boolean allReachable = true;
         // Check if all delivery nodes were reached
         for (int i = 0; i < indexToNode.size(); i++) {
             Node n = indexToNode.get(i);
 
-            if (n.getType().equals("delivery") && !visited[i]) {
-                System.out.println("Unreachable delivery node: " + n.getId());
-                return false;
+            if (n.getType().equals("delivery")) {
+                if (!visited[i]){
+                    System.out.println("Unreachable delivery node: " + n.getId());
+                    allReachable = false;
+                } else {
+                    System.out.println("Reachable delivery node: " + n.getId());
+                }
             }
         }
 
-        return true;
+        return allReachable;
     }
     //F3: Calculate Delivery Capacity
     public int calculateDeliveryCapacity(String hubId, ArrayList<String> urbanArea) {
