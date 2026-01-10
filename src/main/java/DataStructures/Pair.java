@@ -22,4 +22,9 @@ public class Pair <T, V>{
     public int hashCode() {
         return Objects.hash(first, second);
     }
+
+    @Override
+    public String toString() {
+        return first.toString() + " : " + second.toString();
+    }
 }
