@@ -52,7 +52,7 @@ public class Main {
 
             // OPTION 1: LOAD JSON FILE
             if (option == 1) {
-                System.out.println("Please ingress the name of the file below:");
+                System.out.println("Please write the name of the file below:");
                 String filename = myObj.nextLine(); // FIXED
 
                 try {
@@ -62,8 +62,10 @@ public class Main {
                     System.out.println(NovaSchilda.indexToNode);
                     NovaSchilda.idToIndex.keys().printList();
                     NovaSchilda.idToIndex.values().printList();
-                    for (LinkedList<Edge> row : NovaSchilda.adjacencyList) {
-                        row.printList();
+                    for (//LinkedList<Edge> row : NovaSchilda.adjacencyList
+                        int i = 0; i < NovaSchilda.adjacencyList.size(); i++) {
+                        System.out.println("From " + NovaSchilda.indexToNode.get(i).getId() + " " + i);
+                        NovaSchilda.adjacencyList.get(i).printList();
                     }
 
                     hasFilledJsonFile = true;
@@ -82,7 +84,7 @@ public class Main {
 
             // OTHER OPTIONS AFTER JSON LOADED
             switch (option) {
-
+                //B2
                 case 2:
                     System.out.println("Define a No-Fly Zone");
 
@@ -101,8 +103,6 @@ public class Main {
                     }
 
                     NovaSchilda.setNoFlyZone(fromIndex, toIndex);
-                    System.out.println("Corridor from " + fromId + " to " + toId + " is now restricted (No-Fly Zone).");
-
                     System.out.println("Updated edges from " + fromId + ":");
                     NovaSchilda.adjacencyList.get(fromIndex).printList();
                     break;

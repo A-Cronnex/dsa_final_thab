@@ -62,6 +62,10 @@ public class Graph {
         Edge e = getEdge(from, to);
         if (e != null) {
             e.setRestricted(true);
+            System.out.println("Corridor from " + from + " to " + to + " is now restricted (No-Fly Zone).");
+        }
+        else {
+            System.out.println("Such edge does not exist in the network!");
         }
     }
     //Removes a no-fly zone restriction from an edge
@@ -147,3 +151,4 @@ public class Graph {
 
 
 }
+//comm
