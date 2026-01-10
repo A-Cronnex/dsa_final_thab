@@ -4,7 +4,7 @@ import DataStructures.Dictionary;
 import DataStructures.LinkedList;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
-
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,6 +147,64 @@ public class Graph {
         }
 
         return totalCapacity;
+    }
+
+    //B3
+    public void createNewNode(String id, String name, String type, int x, int y){
+        System.out.println("Add a new node to the network");
+        Node node = new Node(id,name,type,x,y);
+        int pos = indexToNode.size();
+        idToIndex.insert(node.getId(), pos);
+        indexToNode.add(node);
+        adjacencyList.add(pos, new LinkedList<>());
+    }
+
+    public void modifyAndExtendNetwork(){
+
+        System.out.println("1. add node 2. Extend corridor");
+        Scanner myObj = new Scanner(System.in);
+        int option = myObj.nextInt();
+        if (option == 1){
+            System.out.println("Please insert the attributes of the node: id, name, type, x (int), y (int), respectively");
+            String id = myObj.nextLine();
+            String name = myObj.nextLine();
+            String type = myObj.nextLine();
+            int x = myObj.nextInt();
+            int y = myObj.nextInt();
+            createNewNode(id,name,type,x,y);
+        }
+        if (option == 2){
+            System.out.print("Create corridor");
+            String idFrom = myObj.nextLine();
+            String idTo = myObj.nextLine();
+
+            int from = idToIndex.get(idFrom);
+            int to = idToIndex.get(idTo);
+
+            Node fromNode = indexToNode.get(from);
+            Node toNode = indexToNode.get(to);
+
+            if (fromNode == null || toNode == null){
+                return;
+            } else {
+                int capacity = myObj.nextInt();
+                int distance = myObj.nextInt();
+                int energy = myObj.nextInt();
+                boolean restricted = myObj.nextBoolean();
+                boolean bidirectional = myObj.nextBoolean();
+                addNewCorridor(from,to,capacity,distance,energy,restricted,bidirectional);
+            }
+        }
+
+    }
+
+    public void addNewCorridor(int from, int to, int capacity, int distance,int energy, boolean restricted, boolean bidirectional){
+
+
+        adjacencyList.get(from).appendNode(new Edge(to, distance, capacity, energy, restricted, bidirectional));
+        if (bidirectional) {
+            adjacencyList.get(to).appendNode(new Edge(from, distance, capacity, energy, restricted, bidirectional));
+        }
     }
 
 
