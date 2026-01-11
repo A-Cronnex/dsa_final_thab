@@ -2,8 +2,11 @@ package org.example;
 
 import DataStructures.Dictionary;
 import DataStructures.LinkedList;
+import DataStructures.Pair;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
+
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +208,80 @@ public class Graph {
         if (bidirectional) {
             adjacencyList.get(to).appendNode(new Edge(from, distance, capacity, energy, restricted, bidirectional));
         }
+    }
+
+    //F2
+
+    public void findEfficientFlightRoutes(String startId){
+        //Application of Djstrka here
+        //convert stringId to index for iterating inside the array
+        int start = idToIndex.get(startId);
+        Node startNode = indexToNode.get(start);
+
+        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
+        if (startNode == null || !startNode.getType().equals("DISTRIBUTION")){
+            return;
+        }
+
+
+
+        boolean[] intree = new boolean[adjacencyList.size()];
+        Arrays.fill(intree,false);
+        int[] mostEnergyEfficient = new int[adjacencyList.size()];
+        Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
+        int[] parent = new int [adjacencyList.size()];
+        Arrays.fill(parent,-1);
+
+        DjkstraResult result = djkstra(intree,mostEnergyEfficient,parent,start);
+
+        System.out.println(result);
+
+    }
+
+    private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
+
+    private DjkstraResult djkstra(boolean[] intree, int[] mostEnergyEfficient, int[] parent, int start){
+        mostEnergyEfficient[start] = 0;
+
+
+        int v = start;
+
+        while(!intree[v]){
+            intree[v] = true;//already visited
+
+            if (indexToNode.get(v).getType().equals("DISTRIBUTION")){
+                break; //end when reached a distribution node. this is the end.
+            }
+
+
+            for (Edge e : adjacencyList.get(v)) {
+
+                if (e.isRestricted()) continue;
+
+                int index_vertex = e.getTo();
+
+                if (!intree[index_vertex] && mostEnergyEfficient[index_vertex] > mostEnergyEfficient[v] + e.getEnergyCost()) {
+                    mostEnergyEfficient[index_vertex] = mostEnergyEfficient[v] + e.getEnergyCost();
+                    parent[index_vertex] = v;
+                }
+            }
+
+
+            //selecting the next vertex
+
+            int dist = Integer.MAX_VALUE;
+
+            for (int i = 0; i < adjacencyList.size(); i++){
+
+                if (!intree[i] && mostEnergyEfficient[i] < dist){
+
+                    dist = mostEnergyEfficient[i];
+                    v = i;
+
+                }
+            }
+        }
+        return new DjkstraResult(mostEnergyEfficient,parent);
     }
 
 
