@@ -39,6 +39,23 @@ public class Dictionary <T, V> {
         return null;
     }
 
+    // Added 10.01.2026
+    private boolean updateBucket(int bucketIndex, T key, V newValue) {
+        // better iteration through would be nice
+        LinkedList<Pair<T, V>> bucket = hashmap[bucketIndex];
+        if (bucket != null) {
+            LinkedListNode<Pair<T, V>> currentNode = bucket.getHead();
+            while (currentNode != null) {
+                if (currentNode.value.first.equals(key)) {
+                    currentNode.value.second = newValue;
+                    return true;
+                }
+                currentNode = currentNode.next;
+            }
+        }
+        return false;
+    }
+
     // operations
 
     public boolean is_empty(){
@@ -58,10 +75,11 @@ public class Dictionary <T, V> {
         int index = hash(key);
         if (hashmap[index] == null) {
             hashmap[index] = new LinkedList<>();
-        } else if (searchBucket(index, key) != null) return;
-
-        hashmap[index].appendNode(new Pair<>(key, value));
-        size++;
+        }
+        if (!updateBucket(index, key, value)){
+            hashmap[index].appendNode(new Pair<>(key, value));
+            size++;
+        }
     }
 
     public boolean delete(T key){
@@ -70,6 +88,7 @@ public class Dictionary <T, V> {
         LinkedList<Pair<T, V>> bucket = hashmap[index];
         if (bucket != null) {
             LinkedListNode<Pair<T, V>> deletedNode = bucket.deleteNode(searchBucket(index, key));
+            if (deletedNode != null) size--;
             return deletedNode != null;
         }
         return false;

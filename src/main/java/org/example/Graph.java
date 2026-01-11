@@ -2,11 +2,8 @@ package org.example;
 
 import DataStructures.Dictionary;
 import DataStructures.LinkedList;
-import DataStructures.Pair;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
-
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;

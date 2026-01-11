@@ -56,6 +56,8 @@ public class Main {
                 System.out.println("Please write the name of the file below:");
                 String filename = myObj.nextLine(); // FIXED
 
+                System.out.println(filename);
+
                 try {
                     NovaSchilda = new Graph(JSONParser.readFromFile(filename));
 
@@ -71,7 +73,7 @@ public class Main {
 
                     hasFilledJsonFile = true;
                 } catch (Exception e) {
-                    System.out.println("File not found! Make sure the file is in project root or /src/main/resources/");
+                    System.out.println(e);
                 }
 
                 continue;
@@ -127,10 +129,6 @@ public class Main {
                     System.out.println("This feature is not implemented yet.");
                     break;
 
-                default:
-                    System.out.println("Feature not implemented yet.");
-                    break;
-
                 case 6:
                     System.out.println("Calculate Delivery Capacity");
 
@@ -149,6 +147,16 @@ public class Main {
                     int capacity = NovaSchilda.calculateDeliveryCapacity(hubIdCap, area);
                     System.out.println("Max simultaneous deliveries: " + capacity);
                     break;
+
+                case 7:
+                    System.out.println("Assess and improve network resilience");
+                    NovaSchilda.minCut();
+                    break;
+
+                default:
+                    System.out.println("Feature not implemented yet.");
+                    break;
+
 
             }
 
