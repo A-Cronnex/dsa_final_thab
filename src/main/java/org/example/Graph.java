@@ -1,9 +1,14 @@
 package org.example;
 
+import DataStructures.BinaryHeap;
 import DataStructures.Dictionary;
 import DataStructures.LinkedList;
+import DataStructures.Pair;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,6 +213,68 @@ public class Graph {
         return totalCapacity;
     }
 
+    //F4: Find the minimum set of corridors, by closing which the network can be disconnected
+    // Stoer-Wagner algorithm
+    // 11.01.2026 assuming undirected graph
+    public void minCut(){
+        int n = indexToNode.size();
+        int[][] adjacencyCopy = new int[n][n];
+        for (int i = 0; i < n; ++i){
+            for (Edge edge : adjacencyList.get(i)){
+                adjacencyCopy[i][edge.getTo()] = 1;
+                adjacencyCopy[edge.getTo()][i] = 1;
+            }
+        }
+
+        ArrayList<Integer> best_cut = new ArrayList<>();
+        int best_cost = Integer.MAX_VALUE;
+
+
+        ArrayList<Integer>[] vertexMerges = new ArrayList[n];
+        for (int i = 0; i < n; ++i){
+            vertexMerges[i] = new ArrayList<>();
+        }
+
+        BinaryHeap weightQueue = new BinaryHeap();
+        for (int i = 0; i < n; ++i){
+            vertexMerges[i].add(i);
+            weightQueue.insertKey(i, 0);
+        }
+
+        for (int phase = 0; phase < n - 1; ++phase){
+            for (int i = 0; i < n - phase; ++i){
+                weightQueue.changeKey(i, 0);
+            }
+            int prev = -1;
+            for (int it = 0; it < n - phase; ++it){
+                Pair<Integer, Integer> sel = weightQueue.getMin();
+                //System.out.println(sel.second);
+                weightQueue.changeKey(sel.first, 1);
+                //System.out.println(sel.second);
+                if (it == n - phase - 1){
+                    if (-sel.second < best_cost){
+                        best_cost = -sel.second;
+                        best_cut = vertexMerges[sel.first];
+                    }
+                    vertexMerges[prev].addAll(vertexMerges[sel.first]);
+                    for (int i = 0; i < n; ++i){
+                        adjacencyCopy[prev][i] = adjacencyCopy[i][prev] + adjacencyCopy[sel.first][i];
+                        adjacencyCopy[i][prev] = adjacencyCopy[prev][i];
+                    }
+                    weightQueue.deleteKey(sel.first);
+                } else {
+                    for (int i = 0; i < n; ++i){
+                        weightQueue.addKey(i, -adjacencyCopy[sel.first][i]);
+                    }
+                    prev = sel.first;
+                }
+            }
+        }
+
+        // create a proper return
+        System.out.println(best_cut);
+        System.out.println(best_cost);
+
+    }
 
 }
-//comm

@@ -1,0 +1,67 @@
+{
+  "nodes": [
+    {
+      "id": "A",
+      "type": "hub"
+    },
+    {
+      "id": "B",
+      "type": "delivery"
+    },
+    {
+      "id": "C",
+      "type": "delivery"
+    },
+    {
+      "id": "D",
+      "type": "delivery"
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "energy": 10,
+      "capacity": 2,
+      "distance": 5,
+      "bidirectional": true,
+      "restricted": false
+    },
+    {
+      "from": "A",
+      "to": "C",
+      "energy": 5,
+      "capacity": 3,
+      "distance": 3,
+      "bidirectional": true,
+      "restricted": false
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "energy": 6,
+      "capacity": 2,
+      "distance": 4,
+      "bidirectional": true,
+      "restricted": false
+    },
+    {
+      "from": "B",
+      "to": "D",
+      "energy": 4,
+      "capacity": 1,
+      "distance": 3,
+      "bidirectional": true,
+      "restricted": false
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "energy": 7,
+      "capacity": 2,
+      "distance": 4,
+      "bidirectional": true,
+      "restricted": false
+    }
+  ]
+}

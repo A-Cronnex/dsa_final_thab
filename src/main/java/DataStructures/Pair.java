@@ -2,7 +2,7 @@ package DataStructures;
 
 import java.util.Objects;
 
-public class Pair <T, V>{
+public class Pair <T, V> implements Cloneable{
     public T first;
     public V second;
 
@@ -26,5 +26,10 @@ public class Pair <T, V>{
     @Override
     public String toString() {
         return first.toString() + " : " + second.toString();
+    }
+
+    @Override
+    protected Pair<T, V> clone(){
+        return new Pair<>(first, second);
     }
 }
