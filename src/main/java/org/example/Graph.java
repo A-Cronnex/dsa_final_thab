@@ -1,17 +1,13 @@
 package org.example;
 
-import DataStructures.BinaryHeap;
 import DataStructures.Dictionary;
 import DataStructures.LinkedList;
-import DataStructures.Pair;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 // THIS SHOULD BE THE MAIN CLASS FOR THIS PROJECT IN FACT
 public class Graph {
@@ -80,65 +76,6 @@ public class Graph {
             e.setRestricted(false);
         }
     }
-
-    //B3
-    public void createNewNode(String id, String name, String type, int x, int y){
-        System.out.println("Add a new node to the network");
-        Node node = new Node(id,name,type,x,y);
-        int pos = indexToNode.size();
-        idToIndex.insert(node.getId(), pos);
-        indexToNode.add(node);
-        adjacencyList.add(pos, new LinkedList<>());
-    }
-
-    public void modifyAndExtendNetwork(){
-
-        System.out.println("1. add node 2. Extend corridor");
-        Scanner myObj = new Scanner(System.in);
-        int option = myObj.nextInt();
-        if (option == 1){
-            System.out.println("Please insert the attributes of the node: id, name, type, x (int), y (int), respectively");
-            String id = myObj.nextLine();
-            String name = myObj.nextLine();
-            String type = myObj.nextLine();
-            int x = myObj.nextInt();
-            int y = myObj.nextInt();
-            createNewNode(id,name,type,x,y);
-        }
-        if (option == 2){
-            System.out.print("Create corridor");
-            String idFrom = myObj.nextLine();
-            String idTo = myObj.nextLine();
-
-            int from = idToIndex.get(idFrom);
-            int to = idToIndex.get(idTo);
-
-            Node fromNode = indexToNode.get(from);
-            Node toNode = indexToNode.get(to);
-
-            if (fromNode == null || toNode == null){
-                return;
-            } else {
-                int capacity = myObj.nextInt();
-                int distance = myObj.nextInt();
-                int energy = myObj.nextInt();
-                boolean restricted = myObj.nextBoolean();
-                boolean bidirectional = myObj.nextBoolean();
-                addNewCorridor(from,to,capacity,distance,energy,restricted,bidirectional);
-            }
-        }
-
-    }
-
-    public void addNewCorridor(int from, int to, int capacity, int distance,int energy, boolean restricted, boolean bidirectional){
-
-
-        adjacencyList.get(from).appendNode(new Edge(to, distance, capacity, energy, restricted, bidirectional));
-        if (bidirectional) {
-            adjacencyList.get(to).appendNode(new Edge(from, distance, capacity, energy, restricted, bidirectional));
-        }
-    }
-
     // F1: Check if all delivery nodes are reachable from a given hub
     public boolean allDeliveriesReachable(String hubId) {
 
@@ -218,68 +155,138 @@ public class Graph {
         return totalCapacity;
     }
 
-    //F4: Find the minimum set of corridors, by closing which the network can be disconnected
-    // Stoer-Wagner algorithm
-    // 11.01.2026 assuming undirected graph
-    public void minCut(){
-        int n = indexToNode.size();
-        int[][] adjacencyCopy = new int[n][n];
-        for (int i = 0; i < n; ++i){
-            for (Edge edge : adjacencyList.get(i)){
-                adjacencyCopy[i][edge.getTo()] = 1;
-                adjacencyCopy[edge.getTo()][i] = 1;
+    //B3
+    public void createNewNode(String id, String name, String type, int x, int y){
+        System.out.println("Add a new node to the network");
+        Node node = new Node(id,name,type,x,y);
+        int pos = indexToNode.size();
+        idToIndex.insert(node.getId(), pos);
+        indexToNode.add(node);
+        adjacencyList.add(pos, new LinkedList<>());
+    }
+
+    public void modifyAndExtendNetwork(){
+
+        System.out.println("1. add node 2. Extend corridor");
+        Scanner myObj = new Scanner(System.in);
+        int option = myObj.nextInt();
+        if (option == 1){
+            System.out.println("Please insert the attributes of the node: id, name, type, x (int), y (int), respectively");
+            String id = myObj.nextLine();
+            String name = myObj.nextLine();
+            String type = myObj.nextLine();
+            int x = myObj.nextInt();
+            int y = myObj.nextInt();
+            createNewNode(id,name,type,x,y);
+        }
+        if (option == 2){
+            System.out.print("Create corridor");
+            String idFrom = myObj.nextLine();
+            String idTo = myObj.nextLine();
+
+            int from = idToIndex.get(idFrom);
+            int to = idToIndex.get(idTo);
+
+            Node fromNode = indexToNode.get(from);
+            Node toNode = indexToNode.get(to);
+
+            if (fromNode == null || toNode == null){
+                return;
+            } else {
+                int capacity = myObj.nextInt();
+                int distance = myObj.nextInt();
+                int energy = myObj.nextInt();
+                boolean restricted = myObj.nextBoolean();
+                boolean bidirectional = myObj.nextBoolean();
+                addNewCorridor(from,to,capacity,distance,energy,restricted,bidirectional);
             }
         }
-
-        ArrayList<Integer> best_cut = new ArrayList<>();
-        int best_cost = Integer.MAX_VALUE;
-
-
-        ArrayList<Integer>[] vertexMerges = new ArrayList[n];
-        for (int i = 0; i < n; ++i){
-            vertexMerges[i] = new ArrayList<>();
-        }
-
-        BinaryHeap weightQueue = new BinaryHeap();
-        for (int i = 0; i < n; ++i){
-            vertexMerges[i].add(i);
-            weightQueue.insertKey(i, 0);
-        }
-
-        for (int phase = 0; phase < n - 1; ++phase){
-            for (int i = 0; i < n - phase; ++i){
-                weightQueue.changeKey(i, 0);
-            }
-            int prev = -1;
-            for (int it = 0; it < n - phase; ++it){
-                Pair<Integer, Integer> sel = weightQueue.getMin();
-                //System.out.println(sel.second);
-                weightQueue.changeKey(sel.first, 1);
-                //System.out.println(sel.second);
-                if (it == n - phase - 1){
-                    if (-sel.second < best_cost){
-                        best_cost = -sel.second;
-                        best_cut = vertexMerges[sel.first];
-                    }
-                    vertexMerges[prev].addAll(vertexMerges[sel.first]);
-                    for (int i = 0; i < n; ++i){
-                        adjacencyCopy[prev][i] = adjacencyCopy[i][prev] + adjacencyCopy[sel.first][i];
-                        adjacencyCopy[i][prev] = adjacencyCopy[prev][i];
-                    }
-                    weightQueue.deleteKey(sel.first);
-                } else {
-                    for (int i = 0; i < n; ++i){
-                        weightQueue.addKey(i, -adjacencyCopy[sel.first][i]);
-                    }
-                    prev = sel.first;
-                }
-            }
-        }
-
-        // create a proper return
-        System.out.println(best_cut);
-        System.out.println(best_cost);
 
     }
 
+    public void addNewCorridor(int from, int to, int capacity, int distance,int energy, boolean restricted, boolean bidirectional){
+
+
+        adjacencyList.get(from).appendNode(new Edge(to, distance, capacity, energy, restricted, bidirectional));
+        if (bidirectional) {
+            adjacencyList.get(to).appendNode(new Edge(from, distance, capacity, energy, restricted, bidirectional));
+        }
+    }
+
+    //F2
+
+    public void findEfficientFlightRoutes(String startId){
+        //Application of Djstrka here
+        //convert stringId to index for iterating inside the array
+        int start = idToIndex.get(startId);
+        Node startNode = indexToNode.get(start);
+
+        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
+        if (startNode == null || !startNode.getType().equals("DISTRIBUTION")){
+            return;
+        }
+
+
+
+        boolean[] intree = new boolean[adjacencyList.size()];
+        Arrays.fill(intree,false);
+        int[] mostEnergyEfficient = new int[adjacencyList.size()];
+        Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
+        int[] parent = new int [adjacencyList.size()];
+        Arrays.fill(parent,-1);
+
+        DjkstraResult result = djkstra(intree,mostEnergyEfficient,parent,start);
+
+        System.out.println(result);
+
+    }
+
+    private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
+
+    private DjkstraResult djkstra(boolean[] intree, int[] mostEnergyEfficient, int[] parent, int start){
+        mostEnergyEfficient[start] = 0;
+
+
+        int v = start;
+
+        while(!intree[v]){
+            intree[v] = true;//already visited
+
+            if (indexToNode.get(v).getType().equals("DISTRIBUTION")){
+                break; //end when reached a distribution node. this is the end.
+            }
+
+
+            for (Edge e : adjacencyList.get(v)) {
+
+                if (e.isRestricted()) continue;
+
+                int index_vertex = e.getTo();
+
+                if (!intree[index_vertex] && mostEnergyEfficient[index_vertex] > mostEnergyEfficient[v] + e.getEnergyCost()) {
+                    mostEnergyEfficient[index_vertex] = mostEnergyEfficient[v] + e.getEnergyCost();
+                    parent[index_vertex] = v;
+                }
+            }
+
+
+            //selecting the next vertex
+
+            int dist = Integer.MAX_VALUE;
+
+            for (int i = 0; i < adjacencyList.size(); i++){
+
+                if (!intree[i] && mostEnergyEfficient[i] < dist){
+
+                    dist = mostEnergyEfficient[i];
+                    v = i;
+
+                }
+            }
+        }
+        return new DjkstraResult(mostEnergyEfficient,parent);
+    }
+
+
 }
+//comm
