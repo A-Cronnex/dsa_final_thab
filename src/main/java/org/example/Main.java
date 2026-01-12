@@ -1,13 +1,9 @@
 package org.example;
-import java.util.Scanner;
-import DataStructures.Dictionary;
-import DataStructures.LinkedListNode;
-import DataStructures.Pair;
-import org.example.JSON.JsonFileReader;
 
-import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.Scanner;
+import org.example.JSON.JsonFileReader;
+import java.util.ArrayList;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -101,35 +97,6 @@ public class Main {
                     if (fromIndex == null || toIndex == null) {
                         System.out.println("Invalid node ID(s). Please check your JSON file.");
                         break;
-                    case 3:
-                        //
-                        break;
-                    case 4:
-                        //
-                        break;
-                    case 5:
-                        //
-                        break;
-                    case 6:
-                        //
-                        break;
-                    case 7:
-                        //
-                        break;
-                    case 8:
-                        //
-                        break;
-                    case 9:
-                        //
-                        break;
-
-                }
-            } else {
-                System.out.println("The command provided is not in the option list.");
-            }
-
-
-        }
                     }
 
                     NovaSchilda.setNoFlyZone(fromIndex, toIndex);
