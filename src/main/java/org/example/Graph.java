@@ -130,33 +130,102 @@ public class Graph {
         return allReachable;
     }
     //F3: Calculate Delivery Capacity
-    public int calculateDeliveryCapacity(String hubId, ArrayList<String> urbanArea) {
+    // BFS to find an augmenting path (Edmonds–Karp requirement)
+    private boolean bfs(int[][] capacity, int[][] flow, int source, int sink, int[] parent) {
+        boolean[] visited = new boolean[capacity.length];
+        java.util.Queue<Integer> queue = new java.util.LinkedList<>();
 
-        Integer hubIndex = idToIndex.get(hubId);
-        if (hubIndex == null) {
-            System.out.println("Hub does not exist.");
-            return 0;
-        }
+        queue.add(source);
+        visited[source] = true;
+        parent[source] = -1;
 
-        int totalCapacity = 0;
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
 
-        // For every edge starting at the hub
-        for (Edge e : adjacencyList.get(hubIndex)) {
-
-            // Skip no-fly zone edges
-            if (e.isRestricted()) continue;
-
-            // If the edge leads to a delivery point in the urban area
-            String targetId = indexToNode.get(e.getTo()).getId();
-
-            if (urbanArea.contains(targetId)) {
-                totalCapacity += e.getCapacity();
+            for (int v = 0; v < capacity.length; v++) {
+                if (!visited[v] && capacity[u][v] - flow[u][v] > 0) {
+                    queue.add(v);
+                    parent[v] = u;
+                    visited[v] = true;
+                    if (v == sink) return true;
+                }
             }
         }
+        return false;
+        }
+        // Full Edmonds–Karp Maximum Flow
+        private int edmondsKarp ( int[][] capacity, int source, int sink) {
+            int n = capacity.length;
+            int[][] flow = new int[n][n];
+            int[] parent = new int[n];
+            int maxFlow = 0;
 
-        return totalCapacity;
-    }
+            while (bfs(capacity, flow, source, sink, parent)) {
 
+                int pathFlow = Integer.MAX_VALUE;
+
+                // find bottleneck of the found path
+                for (int v = sink; v != source; v = parent[v]) {
+                    int u = parent[v];
+                    pathFlow = Math.min(pathFlow, capacity[u][v] - flow[u][v]);
+                }
+
+                // update residual flow
+                for (int v = sink; v != source; v = parent[v]) {
+                    int u = parent[v];
+                    flow[u][v] += pathFlow;
+                    flow[v][u] -= pathFlow; // reverse edge
+                }
+
+                maxFlow += pathFlow;
+            }
+
+            return maxFlow;
+        }
+            public int calculateDeliveryCapacityEdmondsKarp (String hubId, ArrayList < String > deliveryArea){
+
+                Integer hubIndex = idToIndex.get(hubId);
+                if (hubIndex == null) {
+                    System.out.println("Hub does not exist.");
+                    return 0;
+                }
+
+                int n = indexToNode.size();
+                int superSink = n; // create additional node for super-sink
+
+                // capacity matrix of size n+1 (extra for supersink)
+                int[][] capacity = new int[n + 1][n + 1];
+
+                // build capacity matrix from adjacency list
+                for (int u = 0; u < n; u++) {
+                    for (Edge e : adjacencyList.get(u)) {
+
+                        // Skip restricted (no-fly) edges
+                        if (e.isRestricted()) continue;
+
+                        capacity[u][e.getTo()] = e.getCapacity();
+                    }
+                }
+                // connect all delivery points to a single super-sink
+                for (String id : deliveryArea) {
+                    Integer idx = idToIndex.get(id);
+                    if (idx == null) {
+                        System.out.println("Delivery node " + id + " does not exist.");
+                        continue;
+                    }
+
+                    if (!indexToNode.get(idx).getType().equals("delivery")) {
+                        System.out.println(id + " is not a delivery node.");
+                        continue;
+                    }
+
+                    // connect delivery node → super sink with unlimited capacity
+                    capacity[idx][superSink] = Integer.MAX_VALUE;
+                }
+
+                // compute maximum flow from hub to superSink
+                return edmondsKarp(capacity, hubIndex, superSink);
+            }
     //B3
     public void createNewNode(String id, String name, String type, int x, int y){
         System.out.println("Add a new node to the network");
