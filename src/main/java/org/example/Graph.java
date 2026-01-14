@@ -215,9 +215,7 @@ public class Graph {
         }
     }
 
-    public disconnectCorridor(int from, int to){
-        adjacencyList.get(from).de
-    }
+
 
     //F2
 

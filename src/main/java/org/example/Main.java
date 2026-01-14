@@ -109,6 +109,10 @@ public class Main {
                     System.out.println("Updated edges from " + fromId + ":");
                     NovaSchilda.adjacencyList.get(fromIndex).printList();
                     break;
+
+                case 3:
+                    NovaSchilda.modifyAndExtendNetwork();
+                    break;
                 // F1 --> reachibility
                 case 4:
                     System.out.println("Check Reachability");
@@ -126,7 +130,9 @@ public class Main {
 
                 case 5:
                     System.out.println("=== Determine Efficient Flight Route ===");
-                    System.out.println("This feature is not implemented yet.");
+                    System.out.println("FInd efficient Flight Route");
+                    String startNode = myObj.nextLine();
+                    NovaSchilda.findEfficientFlightRoutes(startNode);
                     break;
 
                 case 6:
@@ -152,6 +158,12 @@ public class Main {
                     System.out.println("Assess and improve network resilience");
                     NovaSchilda.minCut();
                     break;
+
+                case 9:
+                    System.out.println("Create network");
+                    //todo - creating topology
+                    String startingNode = myObj.nextLine();
+                    NovaSchilda.communicationInfraestructureForDrones(startingNode);
 
                 default:
                     System.out.println("Feature not implemented yet.");
