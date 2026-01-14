@@ -1,7 +1,9 @@
 package org.example;
 
+import DataStructures.BinaryHeap;
 import DataStructures.Dictionary;
 import DataStructures.LinkedList;
+import DataStructures.Pair;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
 import java.util.Scanner;
@@ -208,6 +210,10 @@ public class Graph {
         }
     }
 
+    public disconnectCorridor(int from, int to){
+        adjacencyList.get(from).de
+    }
+
     //F2
 
     public void findEfficientFlightRoutes(String startId){
@@ -222,64 +228,119 @@ public class Graph {
         }
 
 
-
-        boolean[] intree = new boolean[adjacencyList.size()];
-        Arrays.fill(intree,false);
         int[] mostEnergyEfficient = new int[adjacencyList.size()];
         Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
         int[] parent = new int [adjacencyList.size()];
         Arrays.fill(parent,-1);
 
-        DjkstraResult result = djkstra(intree,mostEnergyEfficient,parent,start);
+        DjkstraResult result = djkstra(mostEnergyEfficient,parent,start);
 
         System.out.println(result);
 
     }
 
+    //F6
+
+    public void communicationInfraestructureForDrones(String startId){
+        int start = idToIndex.get(startId);
+        Node startNode = indexToNode.get(start);
+
+        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
+        if (startNode == null){
+            return;
+        }
+
+        int[] distance = new int[adjacencyList.size()];
+        Arrays.fill(distance,Integer.MAX_VALUE);
+        int[] parent = new int [adjacencyList.size()];
+        Arrays.fill(parent,-1);
+
+        primsAlgorithm(distance,parent,start);
+    }
+
     private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
 
-    private DjkstraResult djkstra(boolean[] intree, int[] mostEnergyEfficient, int[] parent, int start){
+    private DjkstraResult djkstra(int[] mostEnergyEfficient, int[] parent, int start){
         mostEnergyEfficient[start] = 0;
 
+        BinaryHeap priorityQ = new BinaryHeap();
+        priorityQ.insertKey(start,0);
 
-        int v = start;
+        while(!priorityQ.isEmpty()){
 
-        while(!intree[v]){
-            intree[v] = true;//already visited
+            Pair<Integer, Integer> top = priorityQ.extractMin();
+            int vertex = top.first;
+            int energyCost = top.second;
 
-            if (indexToNode.get(v).getType().equals("DISTRIBUTION")){
+
+            if (indexToNode.get(vertex).getType().equals("DISTRIBUTION")){
                 break; //end when reached a distribution node. this is the end.
             }
 
+            if(energyCost > mostEnergyEfficient[vertex]) continue;
 
-            for (Edge e : adjacencyList.get(v)) {
+
+            for (Edge e : adjacencyList.get(vertex)) {
 
                 if (e.isRestricted()) continue;
 
                 int index_vertex = e.getTo();
 
-                if (!intree[index_vertex] && mostEnergyEfficient[index_vertex] > mostEnergyEfficient[v] + e.getEnergyCost()) {
-                    mostEnergyEfficient[index_vertex] = mostEnergyEfficient[v] + e.getEnergyCost();
-                    parent[index_vertex] = v;
+                if (mostEnergyEfficient[index_vertex] > mostEnergyEfficient[vertex] + e.getEnergyCost()) {
+                    mostEnergyEfficient[index_vertex] = mostEnergyEfficient[vertex] + e.getEnergyCost();
+                    priorityQ.insertKey(index_vertex,mostEnergyEfficient[index_vertex]);
+                    parent[index_vertex] = vertex;
                 }
             }
 
 
             //selecting the next vertex
 
-            int dist = Integer.MAX_VALUE;
-
-            for (int i = 0; i < adjacencyList.size(); i++){
-
-                if (!intree[i] && mostEnergyEfficient[i] < dist){
-
-                    dist = mostEnergyEfficient[i];
-                    v = i;
-
-                }
-            }
         }
         return new DjkstraResult(mostEnergyEfficient,parent);
+    }
+
+    private record primResult(int distance, int[] network){}
+
+    private primResult primsAlgorithm(int[] distance, int[]parent, int start){
+
+        boolean[] inTree = new boolean[adjacencyList.size()];
+        Arrays.fill(inTree,false);
+
+        distance[start] = 0;
+        int totalDistance = 0;
+        BinaryHeap priorityQ = new BinaryHeap();
+        priorityQ.insertKey(start,0);
+
+        while(!priorityQ.isEmpty()){
+
+            Pair<Integer, Integer> top = priorityQ.extractMin();
+            int vertex = top.first;
+            int distanceValue = top.second;
+
+            if(inTree[vertex] || distanceValue > distance[vertex]) continue;
+            inTree[vertex] = true;
+
+            if (parent[vertex] != -1){
+                totalDistance += distance[vertex];
+            }
+
+
+            for (Edge e : adjacencyList.get(vertex)) {
+
+                if (e.isRestricted()) continue;
+
+                int index_vertex = e.getTo();
+
+                if (!inTree[index_vertex] && distance[index_vertex] > e.getDistance()) {
+                    distance[index_vertex] = e.getEnergyCost();
+                    priorityQ.insertKey(index_vertex,distance[index_vertex]);
+                    parent[index_vertex] = vertex;
+                }
+            }
+
+        }
+        return new primResult(totalDistance,parent);
     }
 
 
