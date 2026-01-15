@@ -163,7 +163,20 @@ public class Main {
                     System.out.println("Create network");
                     //todo - creating topology
                     String startingNode = myObj.nextLine();
-                    NovaSchilda.communicationInfraestructureForDrones(startingNode);
+
+                    Graph NovaShildaCopy = new Graph();
+
+                    for (int i = 0; i < NovaSchilda.indexToNode.size(); i++){
+                        NovaShildaCopy.indexToNode.add(NovaSchilda.indexToNode.get(i));
+                    }
+
+                    for (int i = 0; i < NovaSchilda.idToIndex.size(); i++){
+                        NovaShildaCopy.adjacencyList.add(NovaSchilda.adjacencyList.get(i));
+                    }
+
+                    for (int i = 0; i < NovaSchilda.idToIndex.size(); i++){
+                        NovaShildaCopy.idToIndex.insert(NovaShildaCopy.indexToNode.get(i).getId(),i);
+                    }
 
                 default:
                     System.out.println("Feature not implemented yet.");
