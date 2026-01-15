@@ -238,7 +238,7 @@ public class Graph {
 
         DjkstraResult result = djkstra(mostEnergyEfficient,parent,start);
 
-        System.out.println(result);
+        System.out.println(formattedPath(result.parent));
 
     }
 
@@ -252,6 +252,8 @@ public class Graph {
         if (startNode == null){
             return;
         }
+
+
 
         int[] distance = new int[adjacencyList.size()];
         Arrays.fill(distance,Integer.MAX_VALUE);
@@ -346,6 +348,19 @@ public class Graph {
         return new primResult(totalDistance,parent);
     }
 
+    public String formattedPath(int[] array){
+
+        int index = 0;
+        String path = "";
+        for (int vertex : array) {
+            index++;
+
+            path = index != array.length - 1? path + indexToNode.get(vertex).getId() + "->" : path + indexToNode.get(vertex).getId();
+        }
+
+        return path;
+    }
+
 
     //F4: Find the minimum set of corridors, by closing which the network can be disconnected
     // Stoer-Wagner algorithm
@@ -410,6 +425,7 @@ public class Graph {
         System.out.println(best_cost);
 
     }
+
 
 
 }
