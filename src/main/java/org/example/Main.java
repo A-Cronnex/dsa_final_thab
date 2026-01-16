@@ -178,6 +178,24 @@ public class Main {
                         NovaShildaCopy.idToIndex.insert(NovaShildaCopy.indexToNode.get(i).getId(),i);
                     }
 
+                    System.out.println("Do you want to temporarily change the network? If yes, press Y, otherwise press N");
+
+                    String optNew = myObj.nextLine();
+
+                    if(optNew.equals("Y")){
+                        System.out.println("Write first id");
+                        fromId = myObj.nextLine();
+                        System.out.println("Write second id");
+                        toId = myObj.nextLine();
+
+                        NovaShildaCopy.editTopography(fromId,toId);
+                    } else if (optNew.equals("N")){
+                        NovaShildaCopy.communicationInfraestructureForDrones(startingNode);
+                    } else {
+                        System.out.println("Not an option");
+                    }
+
+
                 default:
                     System.out.println("Feature not implemented yet.");
                     break;
