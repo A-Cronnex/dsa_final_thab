@@ -113,7 +113,7 @@ public class Main {
                 case 3:
                     NovaSchilda.modifyAndExtendNetwork();
                     break;
-                // F1 --> reachibility
+                // F1 --> reachability
                 case 4:
                     System.out.println("Check Reachability");
                     System.out.print("Enter HUB node ID: ");
@@ -134,24 +134,25 @@ public class Main {
                     String startNode = myObj.nextLine();
                     NovaSchilda.findEfficientFlightRoutes(startNode);
                     break;
-
+                //F3 Calculate Delivery Capacity (Edmonds–Karp)
                 case 6:
                     System.out.println("Calculate Delivery Capacity");
 
                     System.out.print("Enter HUB ID: ");
-                    String hubIdCap = myObj.nextLine();
+                    String hubID = myObj.nextLine();
 
                     System.out.print("Enter number of delivery points in the urban area: ");
-                    int numPoints = Integer.parseInt(myObj.nextLine());
+                    int count = Integer.parseInt(myObj.nextLine());
 
-                    ArrayList<String> area = new ArrayList<>();
-                    for (int i = 0; i < numPoints; i++) {
+                    ArrayList<String> deliveryList = new ArrayList<>();
+                    for (int i = 0; i < count; i++) {
                         System.out.print("Enter delivery point ID: ");
-                        area.add(myObj.nextLine());
+                        deliveryList.add(myObj.nextLine());
                     }
 
-                    int capacity = NovaSchilda.calculateDeliveryCapacity(hubIdCap, area);
-                    System.out.println("Max simultaneous deliveries: " + capacity);
+                    int maxCap = NovaSchilda.calculateDeliveryCapacityEdmondsKarp(hubID, deliveryList);
+
+                    System.out.println("Maximum simultaneous deliveries: " + maxCap);
                     break;
 
                 case 7:
