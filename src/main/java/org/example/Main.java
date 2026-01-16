@@ -103,6 +103,10 @@ public class Main {
                     System.out.println("Updated edges from " + fromId + ":");
                     NovaSchilda.adjacencyList.get(fromIndex).printList();
                     break;
+
+                case 3:
+                    NovaSchilda.modifyAndExtendNetwork();
+                    break;
                 // F1 --> reachability
                 case 4:
                     System.out.println("Check Reachability");
@@ -120,7 +124,9 @@ public class Main {
 
                 case 5:
                     System.out.println("=== Determine Efficient Flight Route ===");
-                    System.out.println("This feature is not implemented yet.");
+                    System.out.println("FInd efficient Flight Route");
+                    String startNode = myObj.nextLine();
+                    NovaSchilda.findEfficientFlightRoutes(startNode);
                     break;
                 //F3 Calculate Delivery Capacity (Edmonds–Karp)
                 case 6:
@@ -143,12 +149,47 @@ public class Main {
                     System.out.println("Maximum simultaneous deliveries: " + maxCap);
                     break;
 
-
-
                 case 7:
                     System.out.println("Assess and improve network resilience");
                     NovaSchilda.minCut();
                     break;
+
+                case 9:
+                    System.out.println("Create network");
+                    //todo - creating topology
+                    String startingNode = myObj.nextLine();
+
+                    Graph NovaShildaCopy = new Graph();
+
+                    for (int i = 0; i < NovaSchilda.indexToNode.size(); i++){
+                        NovaShildaCopy.indexToNode.add(NovaSchilda.indexToNode.get(i));
+                    }
+
+                    for (int i = 0; i < NovaSchilda.idToIndex.size(); i++){
+                        NovaShildaCopy.adjacencyList.add(NovaSchilda.adjacencyList.get(i));
+                    }
+
+                    for (int i = 0; i < NovaSchilda.idToIndex.size(); i++){
+                        NovaShildaCopy.idToIndex.insert(NovaShildaCopy.indexToNode.get(i).getId(),i);
+                    }
+
+                    System.out.println("Do you want to temporarily change the network? If yes, press Y, otherwise press N");
+
+                    String optNew = myObj.nextLine();
+
+                    if(optNew.equals("Y")){
+                        System.out.println("Write first id");
+                        fromId = myObj.nextLine();
+                        System.out.println("Write second id");
+                        toId = myObj.nextLine();
+
+                        NovaShildaCopy.editTopography(fromId,toId);
+                    } else if (optNew.equals("N")){
+                        NovaShildaCopy.communicationInfraestructureForDrones(startingNode);
+                    } else {
+                        System.out.println("Not an option");
+                    }
+
 
                 default:
                     System.out.println("Feature not implemented yet.");
