@@ -11,24 +11,24 @@ public class JSONEdge {
 
     public JSONEdge(){}
 
-    public JSONEdge(String from, String to, int capacity, int energy){
+    public JSONEdge(String from, String to, int capacity, int energy_cost){
         this.from = from;
         this.to = to;
         this.capacity = capacity;
-        this.energy_cost = energy;
+        this.energy_cost = energy_cost;
     }
 
-    public JSONEdge(String from, String to, int distance, int capacity, int energy, boolean restricted, boolean bidirectional) {
+    public JSONEdge(String from, String to, int distance, int capacity, int energy_cost, boolean restricted, boolean bidirectional) {
         this.from = from;
         this.to = to;
         this.distance = distance;
         this.capacity = capacity;
-        this.energy_cost = energy;
+        this.energy_cost = energy_cost;
         this.restricted = restricted;
         this.bidirectional = bidirectional;
     }
 
-    public void setEnergy(int energy) {this.energy_cost = energy;}
+    public void setEnergy(int energy_cost) {this.energy_cost = energy_cost;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDistance(int distance) {this.distance = distance;}
     public void setBidirectional(boolean bidirectional) {this.bidirectional = bidirectional;}
@@ -49,7 +49,7 @@ public class JSONEdge {
         return "JSONEdge{" +
                 "from='" + from + '\'' +
                 ", to='" + to + '\'' +
-                ", energy=" + energy_cost +
+                ", energy_cost=" + energy_cost +
                 ", capacity=" + capacity +
                 ", distance=" + distance +
                 ", bidirectional=" + bidirectional +
