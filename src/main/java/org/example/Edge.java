@@ -2,7 +2,7 @@ package org.example;
 
 public class Edge {
     private int to;
-    private int energy_cost;
+    private int energyCost;
     private int capacity;
     private int distance;
     // does this really need to exist? Or should we simply store 2 edges..?
@@ -14,7 +14,7 @@ public class Edge {
     public Edge(int to, int capacity, int energyCost){
         this.to = to;
         this.capacity = capacity;
-        this.energy_cost = energyCost;
+        this.energyCost = energyCost;
         this.restricted = false;
         this.bidirectional = false;
     }
@@ -23,12 +23,12 @@ public class Edge {
         this.to = to;
         this.distance = distance;
         this.capacity = capacity;
-        this.energy_cost = energyCost;
+        this.energyCost = energyCost;
         this.restricted = restricted; // no fly zone
         this.bidirectional = bidirectional;
     }
 //setters
-    public void setEnergyCost(int energyCost) {this.energy_cost = energyCost;}
+    public void setEnergyCost(int energyCost) {this.energyCost = energyCost;}
     public void setCapacity(int capacity) {this.capacity = capacity;}
     public void setDistance(int distance) {this.distance = distance;}
     public void setBidirectional(boolean bidirectional) {this.bidirectional = bidirectional;}
@@ -39,7 +39,7 @@ public class Edge {
     public boolean isBidirectional() {return bidirectional;}
     public int getDistance() {return distance;}
     public int getCapacity() {return capacity;}
-    public int getEnergyCost() {return energy_cost;}
+    public int getEnergyCost() {return energyCost;}
     public int getTo() {return to;}
 
 
@@ -49,7 +49,7 @@ public class Edge {
     public String toString() {
         return "Edge{" +
                 "to=" + to +
-                ", energyCost=" + energy_cost +
+                ", energyCost=" + energyCost +
                 ", capacity=" + capacity +
                 ", distance=" + distance +
                 ", bidirectional=" + bidirectional +
