@@ -298,7 +298,7 @@ public class Graph {
         Node startNode = indexToNode.get(start);
 
         //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
-        if (startNode == null || !startNode.getType().equals("DISTRIBUTION")){
+        if (startNode == null || !startNode.getType().equals("hub")){
             return;
         }
 
@@ -348,7 +348,7 @@ public class Graph {
             int energyCost = top.second;
 
 
-            if (indexToNode.get(vertex).getType().equals("DISTRIBUTION")){
+            if (indexToNode.get(vertex).getType().equals("delivery")){
                 break; //end when reached a distribution node. this is the end.
             }
 
