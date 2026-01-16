@@ -238,7 +238,7 @@ public class Graph {
 
     public void modifyAndExtendNetwork(){
 
-        System.out.println("1. add node 2. Extend corridor");
+        System.out.println("1. add node 2. Extend corridor 3. Modify energy cost");
         Scanner myObj = new Scanner(System.in);
         int option = myObj.nextInt();
         if (option == 1){
@@ -262,6 +262,8 @@ public class Graph {
             Node toNode = indexToNode.get(to);
 
             if (fromNode == null || toNode == null){
+
+                System.out.println("One of the nodes doesn't exist");
                 return;
             } else {
                 int capacity = myObj.nextInt();
@@ -270,6 +272,30 @@ public class Graph {
                 boolean restricted = myObj.nextBoolean();
                 boolean bidirectional = myObj.nextBoolean();
                 addNewCorridor(from,to,capacity,distance,energy,restricted,bidirectional);
+            }
+        }
+
+        if (option == 3){
+            System.out.print("Modify Energy Cost");
+            String idFrom = myObj.nextLine();
+            String idTo = myObj.nextLine();
+
+            int from = idToIndex.get(idFrom);
+            int to = idToIndex.get(idTo);
+
+            Node fromNode = indexToNode.get(from);
+            Node toNode = indexToNode.get(to);
+            if (fromNode == null || toNode == null){
+
+                System.out.println("One of the nodes doesn't exist");
+                return;
+            } else {
+                int newEnergyCost = myObj.nextInt();
+                adjacencyList.get(from).get(to).setEnergyCost(newEnergyCost);
+                if (adjacencyList.get(from).get(to).isBidirectional()) {
+                    adjacencyList.get(to).get(from).setEnergyCost(newEnergyCost);
+                }
+
             }
         }
 
@@ -284,6 +310,52 @@ public class Graph {
         }
     }
 
+    public void editTopography(String idFrom, String idTo) {
+        int from = idToIndex.get(idFrom);
+        int to = idToIndex.get(idTo);
+
+        Node fromNode = indexToNode.get(from);
+        Node toNode = indexToNode.get(to);
+
+        if (fromNode == null || toNode == null) {
+            System.out.println("Neither vertex exists");
+            return;
+        }
+
+        deleteEdge(from,to);
+
+
+    }
+
+    private Edge findEdge(int from, int to){
+        Edge edge = null;
+        int index = 0;
+        for (Edge e: adjacencyList.get(from)){
+            int toNode = e.getTo();
+            if (to == toNode){
+                edge = e;
+            }
+            if (index == adjacencyList.get(from).getSize() - 1) {
+                System.out.println("The other vertex is not neighboring the starter vertex (idFrom)");
+
+            }
+            index++;
+        }
+        return edge;
+    }
+
+    private void deleteEdge(int from, int to){
+       Edge edgeToFind = findEdge(from,to);
+
+       if(edgeToFind != null){
+           if (edgeToFind.isBidirectional()){
+               Edge bidirectionalEdge = findEdge(to, from);
+               adjacencyList.get(to).deleteNode(bidirectionalEdge);
+           }
+           adjacencyList.get(from).deleteNode(edgeToFind);
+       }
+
+    }
 
 
     //F2
@@ -307,7 +379,7 @@ public class Graph {
 
         DjkstraResult result = djkstra(mostEnergyEfficient,parent,start);
 
-        System.out.println(result);
+        System.out.println(formattedPath(result.parent));
 
     }
 
@@ -415,6 +487,19 @@ public class Graph {
         return new primResult(totalDistance,parent);
     }
 
+    public String formattedPath(int[] array){
+
+        int index = 0;
+        String path = "";
+        for (int vertex : array) {
+            index++;
+
+            path = index != array.length - 1? path + indexToNode.get(vertex).getId() + "->" : path + indexToNode.get(vertex).getId();
+        }
+
+        return path;
+    }
+
 
     //F4: Find the minimum set of corridors, by closing which the network can be disconnected
     // Stoer-Wagner algorithm
@@ -479,6 +564,7 @@ public class Graph {
         System.out.println(best_cost);
 
     }
+
 
 
 }
