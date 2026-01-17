@@ -6,6 +6,7 @@ public class Node {
     private String type;
     private int x;
     private int y;
+    private boolean charging = false;
 
     public Node(){}
 
@@ -15,6 +16,7 @@ public class Node {
         this.type = type;
         this.x = x;
         this.y = y;
+        if (type.equals("charging")) charging = true;
     }
 
     public void setId(String id) { this.id = id;}
@@ -22,12 +24,14 @@ public class Node {
     public void setType(String type) {this.type = type;}
     public void setX(int x) {this.x = x;}
     public void setY(int y) {this.y = y;}
+    public void setCharging(boolean c) {this.charging = c;}
 
     public String getId() {return id;}
     public String getName() {return name;}
     public String getType() {return type;}
     public int getX() {return x;}
     public int getY() {return y;}
+    public boolean isCharging() {return charging;}
 
     @Override
     public String toString() {
@@ -37,6 +41,7 @@ public class Node {
                 ", type='" + type + '\'' +
                 ", x=" + x +
                 ", y=" + y +
+                ", isCharging=" + charging +
                 '}';
     }
 }
