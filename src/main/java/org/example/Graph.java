@@ -231,7 +231,7 @@ public class Graph {
             return;
         }
 
-        DjkstraResult result = djkstra(start);
+        DjkstraResult result = dijkstra(start);
 
         //System.out.println(formattedPath(result.parent));
         for (int i = 0; i < indexToNode.size(); ++i){
@@ -242,7 +242,7 @@ public class Graph {
 
     private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
 
-    private DjkstraResult djkstra(int start){
+    private DjkstraResult dijkstra(int start){
         int[] mostEnergyEfficient = new int[adjacencyList.size()];
         Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
         int[] parent = new int [adjacencyList.size()];
@@ -434,9 +434,7 @@ public class Graph {
             int prev = -1;
             for (int it = 0; it < n - phase; ++it){
                 Pair<Integer, Integer> sel = weightQueue.getMin();
-                //System.out.println(sel.second);
                 weightQueue.changeKey(sel.first, 1);
-                //System.out.println(sel.second);
                 if (it == n - phase - 1){
                     if (-sel.second < best_cost){
                         best_cost = -sel.second;
@@ -466,7 +464,8 @@ public class Graph {
     // F5 - optimizing charge station placement
     // Modelling as Uncapacitated Facility Location Problem
     // Solving with greedy k-centers heuristic with 2x optimization ratio
-    public void placeChargeStations(int k){
+    // returns the min-max distance and the list of placed chargers
+    public Pair<Integer, ArrayList<Integer>> placeChargeStations(int k){
         int n = indexToNode.size();
         int[] dist = new int[n];
         ArrayList<Integer> centers = new ArrayList<>();
@@ -474,11 +473,46 @@ public class Graph {
             dist[i] = Integer.MAX_VALUE;
         }
 
+
+        int initCharge = 0;
+        // find out values considering existing charge stations
         for (int i = 0; i < n; ++i){
             if (indexToNode.get(i).isCharging()){
-
+                initCharge++;
+                int[] shortestPaths = dijkstra(i).mostEnergyEfficient;
+                for (int j = 0; j < n; j++){
+                    dist[j] = Math.min(dist[j], shortestPaths[j]);
+                }
             }
         }
+        k = Math.min(k, n - initCharge);
+
+        int max = 0;
+        if (initCharge > 0) max = maxIndex(dist, n);
+
+        for (int i = 0; i < k; ++i){
+            centers.add(max);
+            int[] shortestPaths = dijkstra(max).mostEnergyEfficient;
+            for (int j = 0; j < n; ++j){
+                dist[j] = Math.min(dist[j], shortestPaths[j]);
+            }
+
+            max = maxIndex(dist, n);
+        }
+
+        for(int i = 0; i < centers.size(); i++)
+        {
+            indexToNode.get(centers.get(i)).setCharging(true);
+        }
+        return new Pair<>(dist[max], centers);
+    }
+
+    static int maxIndex(int[] dist, int n){
+        int maxI = 0;
+        for (int i = 0; i < n; ++i){
+            if (dist[i] > dist[maxI]) maxI = i;
+        }
+        return maxI;
     }
 
 

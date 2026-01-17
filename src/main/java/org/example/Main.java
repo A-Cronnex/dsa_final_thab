@@ -1,6 +1,9 @@
 package org.example;
 
+import java.lang.reflect.Array;
 import java.util.Scanner;
+
+import DataStructures.Pair;
 import org.example.JSON.JsonFileReader;
 import java.util.ArrayList;
 
@@ -152,6 +155,19 @@ public class Main {
                 case 7:
                     System.out.println("Assess and improve network resilience");
                     NovaSchilda.minCut();
+                    break;
+
+                case 8:
+                    System.out.println("Optimize charge station placement");
+                    System.out.println("Enter number of charging station to be placed: ");
+                    int k = Integer.parseInt(myObj.nextLine());
+                    Pair<Integer, ArrayList<Integer>> result = NovaSchilda.placeChargeStations(k);
+                    System.out.println("The biggest energy cost to reach a charging station is " + result.first);
+                    System.out.println("Charging station were placed at the following locations:");
+                    for (Integer index : result.second){
+                        System.out.print(NovaSchilda.indexToNode.get(index).getId() + " ");
+                    }
+                    System.out.println();
                     break;
 
                 case 9:

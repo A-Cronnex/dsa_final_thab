@@ -9,21 +9,21 @@
     {
       "from": "HUB",
       "to": "A2",
-      "energy": 15,
+      "energy_cost": 15,
       "capacity": 2,
       "bidirectional": false
     },
     {
       "from": "HUB",
       "to": "CHARGE",
-      "energy": 5,
+      "energy_cost": 5,
       "capacity": 4,
       "bidirectional": true
     },
     {
       "from": "A1",
       "to": "A2",
-      "energy": 4,
+      "energy_cost": 4,
       "capacity": 1,
       "bidirectional": true
     }
