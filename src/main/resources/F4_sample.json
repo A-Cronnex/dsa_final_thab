@@ -21,7 +21,7 @@
     {
       "from": "A",
       "to": "B",
-      "energy": 10,
+      "energy_cost": 10,
       "capacity": 2,
       "distance": 5,
       "bidirectional": true,
@@ -30,7 +30,7 @@
     {
       "from": "A",
       "to": "C",
-      "energy": 5,
+      "energy_cost": 5,
       "capacity": 3,
       "distance": 3,
       "bidirectional": true,
@@ -39,7 +39,7 @@
     {
       "from": "B",
       "to": "C",
-      "energy": 6,
+      "energy_cost": 6,
       "capacity": 2,
       "distance": 4,
       "bidirectional": true,
@@ -48,7 +48,7 @@
     {
       "from": "B",
       "to": "D",
-      "energy": 4,
+      "energy_cost": 4,
       "capacity": 1,
       "distance": 3,
       "bidirectional": true,
@@ -57,7 +57,7 @@
     {
       "from": "C",
       "to": "D",
-      "energy": 7,
+      "energy_cost": 7,
       "capacity": 2,
       "distance": 4,
       "bidirectional": true,

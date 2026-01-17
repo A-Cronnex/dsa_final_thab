@@ -124,7 +124,7 @@ public class Main {
 
                 case 5:
                     System.out.println("=== Determine Efficient Flight Route ===");
-                    System.out.println("FInd efficient Flight Route");
+                    System.out.println("Find efficient Flight Route");
                     String startNode = myObj.nextLine();
                     NovaSchilda.findEfficientFlightRoutes(startNode);
                     break;

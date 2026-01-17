@@ -219,31 +219,36 @@ public class Graph {
 
     // F2 - find efficient flight route from A to B
     public void findEfficientFlightRoutes(String startId){
-        //Application of Djstrka here
+        //Application of Dijkstra here
         //convert stringId to index for iterating inside the array
-        int start = idToIndex.get(startId);
+        Integer start = idToIndex.get(startId);
+        if (start == null) return;
+
         Node startNode = indexToNode.get(start);
 
         //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
-        if (startNode == null || !startNode.getType().equals("DISTRIBUTION")){
+        if (!startNode.getType().equals("hub")){
             return;
         }
 
+        DjkstraResult result = djkstra(start);
 
-        int[] mostEnergyEfficient = new int[adjacencyList.size()];
-        Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
-        int[] parent = new int [adjacencyList.size()];
-        Arrays.fill(parent,-1);
-
-        DjkstraResult result = djkstra(mostEnergyEfficient,parent,start);
-
-        System.out.println(formattedPath(result.parent));
+        //System.out.println(formattedPath(result.parent));
+        for (int i = 0; i < indexToNode.size(); ++i){
+            System.out.println(indexToNode.get(i).getId() + ": " + result.mostEnergyEfficient[i]);
+        }
 
     }
 
     private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
 
-    private DjkstraResult djkstra(int[] mostEnergyEfficient, int[] parent, int start){
+    private DjkstraResult djkstra(int start){
+        int[] mostEnergyEfficient = new int[adjacencyList.size()];
+        Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
+        int[] parent = new int [adjacencyList.size()];
+        Arrays.fill(parent,-1);
+
+
         mostEnergyEfficient[start] = 0;
 
         BinaryHeap priorityQ = new BinaryHeap();
@@ -457,6 +462,25 @@ public class Graph {
         System.out.println(best_cost);
 
     }
+
+    // F5 - optimizing charge station placement
+    // Modelling as Uncapacitated Facility Location Problem
+    // Solving with greedy k-centers heuristic with 2x optimization ratio
+    public void placeChargeStations(int k){
+        int n = indexToNode.size();
+        int[] dist = new int[n];
+        ArrayList<Integer> centers = new ArrayList<>();
+        for (int i = 0; i < n; i++){
+            dist[i] = Integer.MAX_VALUE;
+        }
+
+        for (int i = 0; i < n; ++i){
+            if (indexToNode.get(i).isCharging()){
+
+            }
+        }
+    }
+
 
     //F6
 
