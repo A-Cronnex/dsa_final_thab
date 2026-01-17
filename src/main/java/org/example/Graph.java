@@ -46,6 +46,7 @@ public class Graph {
             }
         }
     }
+
     //  B2 NO-FLY ZONE
     // Gets the Edge object from one node to another (if it exists)
     public Edge getEdge(int from, int to) {
@@ -78,6 +79,92 @@ public class Graph {
             e.setRestricted(false);
         }
     }
+
+    //B3 Modifying the network
+    public void modifyAndExtendNetwork(){
+
+        System.out.println("1. add node 2. Extend corridor 3. Modify energy cost");
+        Scanner myObj = new Scanner(System.in);
+        int option = myObj.nextInt();
+        if (option == 1){
+            System.out.println("Please insert the attributes of the node: id, name, type, x (int), y (int), respectively");
+            String id = myObj.nextLine();
+            String name = myObj.nextLine();
+            String type = myObj.nextLine();
+            int x = myObj.nextInt();
+            int y = myObj.nextInt();
+            createNewNode(id,name,type,x,y);
+        }
+        if (option == 2){
+            System.out.print("Create corridor");
+            String idFrom = myObj.nextLine();
+            String idTo = myObj.nextLine();
+
+            int from = idToIndex.get(idFrom);
+            int to = idToIndex.get(idTo);
+
+            Node fromNode = indexToNode.get(from);
+            Node toNode = indexToNode.get(to);
+
+            if (fromNode == null || toNode == null){
+
+                System.out.println("One of the nodes doesn't exist");
+                return;
+            } else {
+                int capacity = myObj.nextInt();
+                int distance = myObj.nextInt();
+                int energy = myObj.nextInt();
+                boolean restricted = myObj.nextBoolean();
+                boolean bidirectional = myObj.nextBoolean();
+                addNewCorridor(from,to,capacity,distance,energy,restricted,bidirectional);
+            }
+        }
+
+        if (option == 3){
+            System.out.print("Modify Energy Cost");
+            String idFrom = myObj.nextLine();
+            String idTo = myObj.nextLine();
+
+            int from = idToIndex.get(idFrom);
+            int to = idToIndex.get(idTo);
+
+            Node fromNode = indexToNode.get(from);
+            Node toNode = indexToNode.get(to);
+            if (fromNode == null || toNode == null){
+
+                System.out.println("One of the nodes doesn't exist");
+                return;
+            } else {
+                int newEnergyCost = myObj.nextInt();
+                adjacencyList.get(from).get(to).setEnergyCost(newEnergyCost);
+                if (adjacencyList.get(from).get(to).isBidirectional()) {
+                    adjacencyList.get(to).get(from).setEnergyCost(newEnergyCost);
+                }
+
+            }
+        }
+
+    }
+
+    public void createNewNode(String id, String name, String type, int x, int y){
+        System.out.println("Add a new node to the network");
+        Node node = new Node(id,name,type,x,y);
+        int pos = indexToNode.size();
+        idToIndex.insert(node.getId(), pos);
+        indexToNode.add(node);
+        adjacencyList.add(pos, new LinkedList<>());
+    }
+
+    public void addNewCorridor(int from, int to, int capacity, int distance,int energy, boolean restricted, boolean bidirectional){
+
+
+        adjacencyList.get(from).appendNode(new Edge(to, distance, capacity, energy, restricted, bidirectional));
+        if (bidirectional) {
+            adjacencyList.get(to).appendNode(new Edge(from, distance, capacity, energy, restricted, bidirectional));
+        }
+    }
+
+
     // F1: Check if all delivery nodes are reachable from a given hub
     public boolean allDeliveriesReachable(String hubId) {
 
@@ -129,6 +216,86 @@ public class Graph {
 
         return allReachable;
     }
+
+    // F2 - find efficient flight route from A to B
+    public void findEfficientFlightRoutes(String startId){
+        //Application of Djstrka here
+        //convert stringId to index for iterating inside the array
+        int start = idToIndex.get(startId);
+        Node startNode = indexToNode.get(start);
+
+        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
+        if (startNode == null || !startNode.getType().equals("DISTRIBUTION")){
+            return;
+        }
+
+
+        int[] mostEnergyEfficient = new int[adjacencyList.size()];
+        Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
+        int[] parent = new int [adjacencyList.size()];
+        Arrays.fill(parent,-1);
+
+        DjkstraResult result = djkstra(mostEnergyEfficient,parent,start);
+
+        System.out.println(formattedPath(result.parent));
+
+    }
+
+    private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
+
+    private DjkstraResult djkstra(int[] mostEnergyEfficient, int[] parent, int start){
+        mostEnergyEfficient[start] = 0;
+
+        BinaryHeap priorityQ = new BinaryHeap();
+        priorityQ.insertKey(start,0);
+
+        while(!priorityQ.isEmpty()){
+
+            Pair<Integer, Integer> top = priorityQ.extractMin();
+            int vertex = top.first;
+            int energyCost = top.second;
+
+
+            if (indexToNode.get(vertex).getType().equals("DISTRIBUTION")){
+                break; //end when reached a distribution node. this is the end.
+            }
+
+            if(energyCost > mostEnergyEfficient[vertex]) continue;
+
+
+            for (Edge e : adjacencyList.get(vertex)) {
+
+                if (e.isRestricted()) continue;
+
+                int index_vertex = e.getTo();
+
+                if (mostEnergyEfficient[index_vertex] > mostEnergyEfficient[vertex] + e.getEnergyCost()) {
+                    mostEnergyEfficient[index_vertex] = mostEnergyEfficient[vertex] + e.getEnergyCost();
+                    priorityQ.insertKey(index_vertex,mostEnergyEfficient[index_vertex]);
+                    parent[index_vertex] = vertex;
+                }
+            }
+
+
+            //selecting the next vertex
+
+        }
+        return new DjkstraResult(mostEnergyEfficient,parent);
+    }
+
+    public String formattedPath(int[] array){
+
+        int index = 0;
+        String path = "";
+        for (int vertex : array) {
+            index++;
+
+            path = index != array.length - 1? path + indexToNode.get(vertex).getId() + "->" : path + indexToNode.get(vertex).getId();
+        }
+
+        return path;
+    }
+
     //F3: Calculate Delivery Capacity
     // BFS to find an augmenting path (Edmonds–Karp requirement)
     private boolean bfs(int[][] capacity, int[][] flow, int source, int sink, int[] parent) {
@@ -226,280 +393,6 @@ public class Graph {
                 // compute maximum flow from hub to superSink
                 return edmondsKarp(capacity, hubIndex, superSink);
             }
-    //B3
-    public void createNewNode(String id, String name, String type, int x, int y){
-        System.out.println("Add a new node to the network");
-        Node node = new Node(id,name,type,x,y);
-        int pos = indexToNode.size();
-        idToIndex.insert(node.getId(), pos);
-        indexToNode.add(node);
-        adjacencyList.add(pos, new LinkedList<>());
-    }
-
-    public void modifyAndExtendNetwork(){
-
-        System.out.println("1. add node 2. Extend corridor 3. Modify energy cost");
-        Scanner myObj = new Scanner(System.in);
-        int option = myObj.nextInt();
-        if (option == 1){
-            System.out.println("Please insert the attributes of the node: id, name, type, x (int), y (int), respectively");
-            String id = myObj.nextLine();
-            String name = myObj.nextLine();
-            String type = myObj.nextLine();
-            int x = myObj.nextInt();
-            int y = myObj.nextInt();
-            createNewNode(id,name,type,x,y);
-        }
-        if (option == 2){
-            System.out.print("Create corridor");
-            String idFrom = myObj.nextLine();
-            String idTo = myObj.nextLine();
-
-            int from = idToIndex.get(idFrom);
-            int to = idToIndex.get(idTo);
-
-            Node fromNode = indexToNode.get(from);
-            Node toNode = indexToNode.get(to);
-
-            if (fromNode == null || toNode == null){
-
-                System.out.println("One of the nodes doesn't exist");
-                return;
-            } else {
-                int capacity = myObj.nextInt();
-                int distance = myObj.nextInt();
-                int energy = myObj.nextInt();
-                boolean restricted = myObj.nextBoolean();
-                boolean bidirectional = myObj.nextBoolean();
-                addNewCorridor(from,to,capacity,distance,energy,restricted,bidirectional);
-            }
-        }
-
-        if (option == 3){
-            System.out.print("Modify Energy Cost");
-            String idFrom = myObj.nextLine();
-            String idTo = myObj.nextLine();
-
-            int from = idToIndex.get(idFrom);
-            int to = idToIndex.get(idTo);
-
-            Node fromNode = indexToNode.get(from);
-            Node toNode = indexToNode.get(to);
-            if (fromNode == null || toNode == null){
-
-                System.out.println("One of the nodes doesn't exist");
-                return;
-            } else {
-                int newEnergyCost = myObj.nextInt();
-                adjacencyList.get(from).get(to).setEnergyCost(newEnergyCost);
-                if (adjacencyList.get(from).get(to).isBidirectional()) {
-                    adjacencyList.get(to).get(from).setEnergyCost(newEnergyCost);
-                }
-
-            }
-        }
-
-    }
-
-    public void addNewCorridor(int from, int to, int capacity, int distance,int energy, boolean restricted, boolean bidirectional){
-
-
-        adjacencyList.get(from).appendNode(new Edge(to, distance, capacity, energy, restricted, bidirectional));
-        if (bidirectional) {
-            adjacencyList.get(to).appendNode(new Edge(from, distance, capacity, energy, restricted, bidirectional));
-        }
-    }
-
-    public void editTopography(String idFrom, String idTo) {
-        int from = idToIndex.get(idFrom);
-        int to = idToIndex.get(idTo);
-
-        Node fromNode = indexToNode.get(from);
-        Node toNode = indexToNode.get(to);
-
-        if (fromNode == null || toNode == null) {
-            System.out.println("Neither vertex exists");
-            return;
-        }
-
-        deleteEdge(from,to);
-
-
-    }
-
-    private Edge findEdge(int from, int to){
-        Edge edge = null;
-        int index = 0;
-        for (Edge e: adjacencyList.get(from)){
-            int toNode = e.getTo();
-            if (to == toNode){
-                edge = e;
-            }
-            if (index == adjacencyList.get(from).getSize() - 1) {
-                System.out.println("The other vertex is not neighboring the starter vertex (idFrom)");
-
-            }
-            index++;
-        }
-        return edge;
-    }
-
-    private void deleteEdge(int from, int to){
-       Edge edgeToFind = findEdge(from,to);
-
-       if(edgeToFind != null){
-           if (edgeToFind.isBidirectional()){
-               Edge bidirectionalEdge = findEdge(to, from);
-               adjacencyList.get(to).deleteNode(bidirectionalEdge);
-           }
-           adjacencyList.get(from).deleteNode(edgeToFind);
-       }
-
-    }
-
-
-    //F2
-
-    public void findEfficientFlightRoutes(String startId){
-        //Application of Djstrka here
-        //convert stringId to index for iterating inside the array
-        int start = idToIndex.get(startId);
-        Node startNode = indexToNode.get(start);
-
-        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
-        if (startNode == null || !startNode.getType().equals("DISTRIBUTION")){
-            return;
-        }
-
-
-        int[] mostEnergyEfficient = new int[adjacencyList.size()];
-        Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
-        int[] parent = new int [adjacencyList.size()];
-        Arrays.fill(parent,-1);
-
-        DjkstraResult result = djkstra(mostEnergyEfficient,parent,start);
-
-        System.out.println(formattedPath(result.parent));
-
-    }
-
-    //F6
-
-    public void communicationInfraestructureForDrones(String startId){
-        int start = idToIndex.get(startId);
-        Node startNode = indexToNode.get(start);
-
-        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
-        if (startNode == null){
-            return;
-        }
-
-        int[] distance = new int[adjacencyList.size()];
-        Arrays.fill(distance,Integer.MAX_VALUE);
-        int[] parent = new int [adjacencyList.size()];
-        Arrays.fill(parent,-1);
-
-        primsAlgorithm(distance,parent,start);
-    }
-
-    private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
-
-    private DjkstraResult djkstra(int[] mostEnergyEfficient, int[] parent, int start){
-        mostEnergyEfficient[start] = 0;
-
-        BinaryHeap priorityQ = new BinaryHeap();
-        priorityQ.insertKey(start,0);
-
-        while(!priorityQ.isEmpty()){
-
-            Pair<Integer, Integer> top = priorityQ.extractMin();
-            int vertex = top.first;
-            int energyCost = top.second;
-
-
-            if (indexToNode.get(vertex).getType().equals("DISTRIBUTION")){
-                break; //end when reached a distribution node. this is the end.
-            }
-
-            if(energyCost > mostEnergyEfficient[vertex]) continue;
-
-
-            for (Edge e : adjacencyList.get(vertex)) {
-
-                if (e.isRestricted()) continue;
-
-                int index_vertex = e.getTo();
-
-                if (mostEnergyEfficient[index_vertex] > mostEnergyEfficient[vertex] + e.getEnergyCost()) {
-                    mostEnergyEfficient[index_vertex] = mostEnergyEfficient[vertex] + e.getEnergyCost();
-                    priorityQ.insertKey(index_vertex,mostEnergyEfficient[index_vertex]);
-                    parent[index_vertex] = vertex;
-                }
-            }
-
-
-            //selecting the next vertex
-
-        }
-        return new DjkstraResult(mostEnergyEfficient,parent);
-    }
-
-    private record primResult(int distance, int[] network){}
-
-    private primResult primsAlgorithm(int[] distance, int[]parent, int start){
-
-        boolean[] inTree = new boolean[adjacencyList.size()];
-        Arrays.fill(inTree,false);
-
-        distance[start] = 0;
-        int totalDistance = 0;
-        BinaryHeap priorityQ = new BinaryHeap();
-        priorityQ.insertKey(start,0);
-
-        while(!priorityQ.isEmpty()){
-
-            Pair<Integer, Integer> top = priorityQ.extractMin();
-            int vertex = top.first;
-            int distanceValue = top.second;
-
-            if(inTree[vertex] || distanceValue > distance[vertex]) continue;
-            inTree[vertex] = true;
-
-            if (parent[vertex] != -1){
-                totalDistance += distance[vertex];
-            }
-
-
-            for (Edge e : adjacencyList.get(vertex)) {
-
-                if (e.isRestricted()) continue;
-
-                int index_vertex = e.getTo();
-
-                if (!inTree[index_vertex] && distance[index_vertex] > e.getDistance()) {
-                    distance[index_vertex] = e.getEnergyCost();
-                    priorityQ.insertKey(index_vertex,distance[index_vertex]);
-                    parent[index_vertex] = vertex;
-                }
-            }
-
-        }
-        return new primResult(totalDistance,parent);
-    }
-
-    public String formattedPath(int[] array){
-
-        int index = 0;
-        String path = "";
-        for (int vertex : array) {
-            index++;
-
-            path = index != array.length - 1? path + indexToNode.get(vertex).getId() + "->" : path + indexToNode.get(vertex).getId();
-        }
-
-        return path;
-    }
-
 
     //F4: Find the minimum set of corridors, by closing which the network can be disconnected
     // Stoer-Wagner algorithm
@@ -565,7 +458,114 @@ public class Graph {
 
     }
 
+    //F6
+
+    public void communicationInfrastructureForDrones(String startId){
+        int start = idToIndex.get(startId);
+        Node startNode = indexToNode.get(start);
+
+        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
+        if (startNode == null){
+            return;
+        }
+
+        int[] distance = new int[adjacencyList.size()];
+        Arrays.fill(distance,Integer.MAX_VALUE);
+        int[] parent = new int [adjacencyList.size()];
+        Arrays.fill(parent,-1);
+
+        primsAlgorithm(distance,parent,start);
+    }
+
+    private record primResult(int distance, int[] network){}
+
+    private primResult primsAlgorithm(int[] distance, int[]parent, int start){
+
+        boolean[] inTree = new boolean[adjacencyList.size()];
+        Arrays.fill(inTree,false);
+
+        distance[start] = 0;
+        int totalDistance = 0;
+        BinaryHeap priorityQ = new BinaryHeap();
+        priorityQ.insertKey(start,0);
+
+        while(!priorityQ.isEmpty()){
+
+            Pair<Integer, Integer> top = priorityQ.extractMin();
+            int vertex = top.first;
+            int distanceValue = top.second;
+
+            if(inTree[vertex] || distanceValue > distance[vertex]) continue;
+            inTree[vertex] = true;
+
+            if (parent[vertex] != -1){
+                totalDistance += distance[vertex];
+            }
+
+
+            for (Edge e : adjacencyList.get(vertex)) {
+
+                if (e.isRestricted()) continue;
+
+                int index_vertex = e.getTo();
+
+                if (!inTree[index_vertex] && distance[index_vertex] > e.getDistance()) {
+                    distance[index_vertex] = e.getEnergyCost();
+                    priorityQ.insertKey(index_vertex,distance[index_vertex]);
+                    parent[index_vertex] = vertex;
+                }
+            }
+
+        }
+        return new primResult(totalDistance,parent);
+    }
+
+    public void editTopography(String idFrom, String idTo) {
+        int from = idToIndex.get(idFrom);
+        int to = idToIndex.get(idTo);
+
+        Node fromNode = indexToNode.get(from);
+        Node toNode = indexToNode.get(to);
+
+        if (fromNode == null || toNode == null) {
+            System.out.println("Neither vertex exists");
+            return;
+        }
+
+        deleteEdge(from,to);
+
+
+    }
+
+    private Edge findEdge(int from, int to){
+        Edge edge = null;
+        int index = 0;
+        for (Edge e: adjacencyList.get(from)){
+            int toNode = e.getTo();
+            if (to == toNode){
+                edge = e;
+            }
+            if (index == adjacencyList.get(from).getSize() - 1) {
+                System.out.println("The other vertex is not neighboring the starter vertex (idFrom)");
+
+            }
+            index++;
+        }
+        return edge;
+    }
+
+    private void deleteEdge(int from, int to){
+        Edge edgeToFind = findEdge(from,to);
+
+        if(edgeToFind != null){
+            if (edgeToFind.isBidirectional()){
+                Edge bidirectionalEdge = findEdge(to, from);
+                adjacencyList.get(to).deleteNode(bidirectionalEdge);
+            }
+            adjacencyList.get(from).deleteNode(edgeToFind);
+        }
+
+    }
 
 
 }
-//comm

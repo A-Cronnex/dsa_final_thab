@@ -185,7 +185,7 @@ public class Main {
 
                         NovaShildaCopy.editTopography(fromId,toId);
                     } else if (optNew.equals("N")){
-                        NovaShildaCopy.communicationInfraestructureForDrones(startingNode);
+                        NovaShildaCopy.communicationInfrastructureForDrones(startingNode);
                     } else {
                         System.out.println("Not an option");
                     }
