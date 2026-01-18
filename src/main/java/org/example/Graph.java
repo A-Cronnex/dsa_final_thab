@@ -1,15 +1,11 @@
 package org.example;
 
-import DataStructures.BinaryHeap;
+import DataStructures.*;
 import DataStructures.Dictionary;
 import DataStructures.LinkedList;
-import DataStructures.Pair;
 import org.example.JSON.JSONEdge;
 import org.example.JSON.JSONGraph;
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 
 // THIS SHOULD BE THE MAIN CLASS FOR THIS PROJECT IN FACT
 public class Graph {
@@ -218,31 +214,49 @@ public class Graph {
     }
 
     // F2 - find efficient flight route from A to B
-    public void findEfficientFlightRoutes(String startId){
+    public void findEfficientFlightRoutes(String startId, String endId){
         //Application of Dijkstra here
         //convert stringId to index for iterating inside the array
-        Integer start = idToIndex.get(startId);
-        if (start == null) return;
+        System.out.println(startId);
 
+        int start = idToIndex.get(startId);
+        int end = idToIndex.get(endId);
+        /* Integer
+        if (start == null || end == null) return;
+        */
+
+        System.out.println(start);
         Node startNode = indexToNode.get(start);
+        Node endNode = indexToNode.get(end);
 
-        //Note: There's no .json in this branch that can let me see the format of the data inside the type attribute, so I left it as DISTRIBUTION
-        if (!startNode.getType().equals("hub")){
+        if (startNode == null || startNode.getType().equals("delivery")){
             return;
         }
 
-        DjkstraResult result = dijkstra(start);
-
-        //System.out.println(formattedPath(result.parent));
-        for (int i = 0; i < indexToNode.size(); ++i){
-            System.out.println(indexToNode.get(i).getId() + ": " + result.mostEnergyEfficient[i]);
+        if (endNode == null || !endNode.getType().equals("delivery")){
+            System.out.println("End point is not a delivery point");
+            return;
         }
+
+        if (!startNode.getType().equals("hub")){
+            System.out.println("Must insert a hub");
+            return;
+        }
+
+
+        DijkstraResult result = dijkstra(start);
+
+        int mostEnergyEfficientResult = result.mostEnergyEfficient[end];
+
+
+        System.out.println("The shortest path is" + formattedPathDijkstra(result.parent,end));
+        System.out.println("The energy cost of this past is: " + mostEnergyEfficientResult);
 
     }
 
-    private record DjkstraResult(int[] mostEnergyEfficient, int[] parent){}
+    private record DijkstraResult(int[] mostEnergyEfficient, int[] parent){}
 
-    private DjkstraResult dijkstra(int start){
+    private DijkstraResult dijkstra(int start){
         int[] mostEnergyEfficient = new int[adjacencyList.size()];
         Arrays.fill(mostEnergyEfficient,Integer.MAX_VALUE);
         int[] parent = new int [adjacencyList.size()];
@@ -279,21 +293,60 @@ public class Graph {
             //selecting the next vertex
 
         }
-        return new DjkstraResult(mostEnergyEfficient,parent);
+        return new DijkstraResult(mostEnergyEfficient,parent);
     }
 
-    public String formattedPath(int[] array){
+    public String formattedPathDijkstra(int[] parent, int end){
+        ArrayList<Integer> path = new ArrayList<>();
+        while (end != -1){
+            path.add(end);
+            end = parent[end];
+        }
+        String format = "";
 
-        int index = 0;
-        String path = "";
-        for (int vertex : array) {
-            index++;
-
-            path = index != array.length - 1? path + indexToNode.get(vertex).getId() + "->" : path + indexToNode.get(vertex).getId();
+        for (int i = path.size() - 1; i>=0 ;  i--){
+            format = i > 0? format + indexToNode.get(path.get(i)).getId() + "-> " : format + indexToNode.get(path.get(i)).getId() ;
         }
 
-        return path;
+        return format;
     }
+
+    /*
+    public String formattedPathDjkstra(int[] parent,int start, int end){
+
+        ArrayList<Integer> path = new ArrayList<Integer>();
+        ArrayList<Integer> reMadePath = createPathRecursively(parent,end,parent[end],path);
+        reMadePath.add(start);
+        String format = "";
+
+        for (int i = reMadePath.size() - 1; i>=0 ;  i--){
+            format = i > 0? format + indexToNode.get(reMadePath.get(i)).getId() + "-> " : format + indexToNode.get(reMadePath.get(i)).getId() ;
+        }
+
+        return format;
+    }
+    */
+
+    /*
+
+    private ArrayList<Integer> createPathRecursively(int[] parent,int vertex, int getParent,ArrayList<Integer> path){
+        if (vertex != -1){
+            path.add(vertex);
+        }
+        if (parent[getParent] == -1){
+            return path;
+        } else {
+            getParent = parent[vertex];
+            vertex = getParent;
+            return (createPathRecursively(parent,getParent,vertex,path));
+        }
+    }
+
+    why check grandparent for -1, instead of parent? And then no need to add start outside of the recursion?
+    in the else, getParent and vertex end up with the same value, it's useless
+
+     */
+
 
     //F3: Calculate Delivery Capacity
     // BFS to find an augmenting path (Edmonds–Karp requirement)
@@ -348,50 +401,51 @@ public class Graph {
 
             return maxFlow;
         }
-            public int calculateDeliveryCapacityEdmondsKarp (String hubId, ArrayList < String > deliveryArea){
+        public int calculateDeliveryCapacityEdmondsKarp (String hubId, ArrayList < String > deliveryArea){
 
-                Integer hubIndex = idToIndex.get(hubId);
-                if (hubIndex == null) {
-                    System.out.println("Hub does not exist.");
-                    return 0;
-                }
-
-                int n = indexToNode.size();
-                int superSink = n; // create additional node for super-sink
-
-                // capacity matrix of size n+1 (extra for supersink)
-                int[][] capacity = new int[n + 1][n + 1];
-
-                // build capacity matrix from adjacency list
-                for (int u = 0; u < n; u++) {
-                    for (Edge e : adjacencyList.get(u)) {
-
-                        // Skip restricted (no-fly) edges
-                        if (e.isRestricted()) continue;
-
-                        capacity[u][e.getTo()] = e.getCapacity();
-                    }
-                }
-                // connect all delivery points to a single super-sink
-                for (String id : deliveryArea) {
-                    Integer idx = idToIndex.get(id);
-                    if (idx == null) {
-                        System.out.println("Delivery node " + id + " does not exist.");
-                        continue;
-                    }
-
-                    if (!indexToNode.get(idx).getType().equals("delivery")) {
-                        System.out.println(id + " is not a delivery node.");
-                        continue;
-                    }
-
-                    // connect delivery node → super sink with unlimited capacity
-                    capacity[idx][superSink] = Integer.MAX_VALUE;
-                }
-
-                // compute maximum flow from hub to superSink
-                return edmondsKarp(capacity, hubIndex, superSink);
+            Integer hubIndex = idToIndex.get(hubId);
+            if (hubIndex == null) {
+                System.out.println("Hub does not exist.");
+                return 0;
             }
+
+            int n = indexToNode.size();
+            int superSink = n; // create additional node for super-sink
+
+            // capacity matrix of size n+1 (extra for supersink)
+            int[][] capacity = new int[n + 1][n + 1];
+
+            // build capacity matrix from adjacency list
+            for (int u = 0; u < n; u++) {
+                for (Edge e : adjacencyList.get(u)) {
+
+                    // Skip restricted (no-fly) edges
+                    if (e.isRestricted()) continue;
+
+                    capacity[u][e.getTo()] = e.getCapacity();
+                }
+            }
+            // connect all delivery points to a single super-sink
+            for (String id : deliveryArea) {
+                Integer idx = idToIndex.get(id);
+                if (idx == null) {
+                    System.out.println("Delivery node " + id + " does not exist.");
+                    continue;
+                }
+
+                if (!indexToNode.get(idx).getType().equals("delivery")) {
+                    System.out.println(id + " is not a delivery node.");
+                    continue;
+                }
+
+                // connect delivery node → super sink with unlimited capacity
+                capacity[idx][superSink] = Integer.MAX_VALUE;
+            }
+
+            // compute maximum flow from hub to superSink
+            return edmondsKarp(capacity, hubIndex, superSink);
+        }
+
 
     //F4: Find the minimum set of corridors, by closing which the network can be disconnected
     // Stoer-Wagner algorithm
@@ -527,13 +581,30 @@ public class Graph {
         int[] parent = new int [adjacencyList.size()];
         Arrays.fill(parent,-1);
 
-        primsAlgorithm(distance,parent,start);
+        primResult result = primsAlgorithm(distance,parent,start);
+
+        int totalDistance = result.distance;
+        int[] parentArray = result.network;
+
+        for (int i = 0; i<parentArray.length; i++){
+            System.out.println("parent of index " + i + "is" + parentArray[i]);
+        }
+
+        boolean isMST = isMST(parentArray);
+
+        if (isMST){
+            System.out.println(createVisualizationPrim(result.network,start));
+        } else {
+            System.out.println("Given this vertex and the computed typology, it's not possible to create a communication infraestructure which connect all");
+        }
+
     }
 
     private record primResult(int distance, int[] network){}
 
     private primResult primsAlgorithm(int[] distance, int[]parent, int start){
 
+        System.out.println(start);
         boolean[] inTree = new boolean[adjacencyList.size()];
         Arrays.fill(inTree,false);
 
@@ -563,7 +634,7 @@ public class Graph {
                 int index_vertex = e.getTo();
 
                 if (!inTree[index_vertex] && distance[index_vertex] > e.getDistance()) {
-                    distance[index_vertex] = e.getEnergyCost();
+                    distance[index_vertex] = e.getDistance();
                     priorityQ.insertKey(index_vertex,distance[index_vertex]);
                     parent[index_vertex] = vertex;
                 }
@@ -618,6 +689,29 @@ public class Graph {
             adjacencyList.get(from).deleteNode(edgeToFind);
         }
 
+    }
+
+
+
+    private String createVisualizationPrim(int[]parent, int start){
+        String format = "";
+        for (int i = 0; i < parent.length ; i++){
+            if (i != start){
+                format = format + "[" + indexToNode.get(parent[i]).getId() + "]" + " " +  "[" + indexToNode.get(i).getId() + "] \n";
+            }
+        }
+        return format;
+    }
+
+    private boolean isMST(int[] parents){
+        int counter = 0;
+
+        for (int i : parents){
+            if (i == -1){
+                counter++;
+            }
+        }
+        return counter == 1;
     }
 
 
