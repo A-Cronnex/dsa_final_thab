@@ -126,7 +126,8 @@ public class Main {
                     System.out.println("=== Determine Efficient Flight Route ===");
                     System.out.println("FInd efficient Flight Route");
                     String startNode = myObj.nextLine();
-                    NovaSchilda.findEfficientFlightRoutes(startNode);
+                    String endNode = myObj.nextLine();
+                    NovaSchilda.findEfficientFlightRoutes(startNode, endNode);
                     break;
                 //F3 Calculate Delivery Capacity (Edmonds–Karp)
                 case 6:
