@@ -248,7 +248,6 @@ public class Graph {
         int[] parent = new int [adjacencyList.size()];
         Arrays.fill(parent,-1);
 
-
         mostEnergyEfficient[start] = 0;
 
         BinaryHeap priorityQ = new BinaryHeap();
@@ -259,11 +258,6 @@ public class Graph {
             Pair<Integer, Integer> top = priorityQ.extractMin();
             int vertex = top.first;
             int energyCost = top.second;
-
-
-            if (indexToNode.get(vertex).getType().equals("DISTRIBUTION")){
-                break; //end when reached a distribution node. this is the end.
-            }
 
             if(energyCost > mostEnergyEfficient[vertex]) continue;
 
@@ -407,6 +401,7 @@ public class Graph {
         int[][] adjacencyCopy = new int[n][n];
         for (int i = 0; i < n; ++i){
             for (Edge edge : adjacencyList.get(i)){
+                if (edge.isRestricted()) continue;
                 adjacencyCopy[i][edge.getTo()] = 1;
                 adjacencyCopy[edge.getTo()][i] = 1;
             }
