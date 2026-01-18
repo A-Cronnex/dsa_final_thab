@@ -206,6 +206,7 @@ public class Main {
                     } else {
                         System.out.println("Not an option");
                     }
+                    break;
 
 
                 default:

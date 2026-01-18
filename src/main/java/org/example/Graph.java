@@ -217,23 +217,19 @@ public class Graph {
     public void findEfficientFlightRoutes(String startId, String endId){
         //Application of Dijkstra here
         //convert stringId to index for iterating inside the array
-        System.out.println(startId);
 
-        int start = idToIndex.get(startId);
-        int end = idToIndex.get(endId);
-        /* Integer
+        Integer start = idToIndex.get(startId);
+        Integer end = idToIndex.get(endId);
         if (start == null || end == null) return;
-        */
 
-        System.out.println(start);
         Node startNode = indexToNode.get(start);
         Node endNode = indexToNode.get(end);
 
-        if (startNode == null || startNode.getType().equals("delivery")){
+        if (startNode.getType().equals("delivery")){
             return;
         }
 
-        if (endNode == null || !endNode.getType().equals("delivery")){
+        if (!endNode.getType().equals("delivery")){
             System.out.println("End point is not a delivery point");
             return;
         }
@@ -249,7 +245,7 @@ public class Graph {
         int mostEnergyEfficientResult = result.mostEnergyEfficient[end];
 
 
-        System.out.println("The shortest path is" + formattedPathDijkstra(result.parent,end));
+        System.out.println("The shortest path is " + formattedPathDijkstra(result.parent,end));
         System.out.println("The energy cost of this past is: " + mostEnergyEfficientResult);
 
     }
@@ -587,7 +583,7 @@ public class Graph {
         int[] parentArray = result.network;
 
         for (int i = 0; i<parentArray.length; i++){
-            System.out.println("parent of index " + i + "is" + parentArray[i]);
+            System.out.println("parent of index " + i + " is " + parentArray[i]);
         }
 
         boolean isMST = isMST(parentArray);
